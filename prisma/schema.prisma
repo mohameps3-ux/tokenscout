@@ -1,0 +1,155 @@
+// TokenScout 2.0 - Prisma Schema (SQLite)
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// Chain values: "BASE" | "SOLANA"
+// UserTier values: "FREE" | "PRO"
+// PredictionDir values: "UP" | "DOWN"
+// BadgeType values: "ALPHA_CALLER" | "WEEK_WINNER" | "STREAK_5" | "STREAK_10" | "FIRST_PREDICTION"
+
+model User {
+  id                 String   @id @default(cuid())
+  walletAddress      String?  @unique
+  username           String?  @unique
+  eloScore           Int      @default(1000)
+  totalPredictions   Int      @default(0)
+  correctPredictions Int      @default(0)
+  tier               String   @default("FREE")
+  stripeCustomerId   String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  predictions        Prediction[]
+  leaderboardEntries LeaderboardEntry[]
+  badges             UserBadge[]
+
+  @@index([eloScore])
+  @@index([walletAddress])
+}
+
+model Token {
+  id             String   @id @default(cuid())
+  address        String
+  chain          String
+  name           String
+  symbol         String
+  pairAddress    String?
+  dexId          String?
+  priceUsd       Float?
+  liquidity      Float?
+  marketCap      Float?
+  volume24h      Float?
+  priceChange24h Float?
+  totalScore     Int      @default(0)
+  liquidityScore Int      @default(0)
+  holderScore    Int      @default(0)
+  ageScore       Int      @default(0)
+  volumeScore    Int      @default(0)
+  suspicionScore Int      @default(0)
+  holderCount    Int?
+  tokenAge       Int?
+  isHoneypot     Boolean  @default(false)
+  hasBundledBuys Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  listedAt       DateTime?
+
+  scores      Score[]
+  predictions Prediction[]
+
+  @@unique([address, chain])
+  @@index([chain])
+  @@index([totalScore])
+  @@index([createdAt])
+}
+
+model Score {
+  id             String   @id @default(cuid())
+  tokenId        String
+  totalScore     Int
+  liquidityScore Int
+  holderScore    Int
+  ageScore       Int
+  volumeScore    Int
+  suspicionScore Int
+  priceUsd       Float?
+  liquidity      Float?
+  marketCap      Float?
+  volume24h      Float?
+  recordedAt     DateTime @default(now())
+
+  token Token @relation(fields: [tokenId], references: [id], onDelete: Cascade)
+
+  @@index([tokenId])
+  @@index([recordedAt])
+}
+
+model Prediction {
+  id                  String   @id @default(cuid())
+  userId              String
+  tokenId             String
+  direction           String
+  confidence          Int      @default(50)
+  resolved            Boolean       @default(false)
+  correct             Boolean?
+  eloChange           Int?
+  priceAtPrediction   Float?
+  priceAtResolution   Float?
+  resolvedAt          DateTime?
+  expiresAt           DateTime
+  createdAt           DateTime      @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token Token @relation(fields: [tokenId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenId])
+  @@index([resolved])
+  @@index([expiresAt])
+}
+
+model LeaderboardEntry {
+  id          String   @id @default(cuid())
+  userId      String
+  weekStart   DateTime
+  eloScore    Int
+  rank        Int?
+  predictions Int      @default(0)
+  accuracy    Float    @default(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, weekStart])
+  @@index([weekStart, eloScore])
+}
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  userId    String
+  badge     String
+  awardedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badge])
+}
+
+model JobLog {
+  id        String   @id @default(cuid())
+  jobName   String
+  status    String
+  message   String?
+  duration  Int?
+  createdAt DateTime @default(now())
+
+  @@index([jobName])
+  @@index([createdAt])
+}
+

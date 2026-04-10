@@ -1,0 +1,14 @@
+[build]
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/api/tokens/stats"
+healthcheckTimeout = 60
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 5
+
+# SQLite persistence — add a volume in the Railway dashboard:
+#   Mount path: /data
+# Then set DATABASE_URL = file:/data/tokenscout.db in Railway env vars.
+# The Dockerfile defaults to this path already.
