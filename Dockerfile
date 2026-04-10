@@ -17,10 +17,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma client
 RUN npx prisma generate
-
-# Build Next.js (standalone output)
 RUN npm run build
 
 # ── Stage 3: production runner ───────────────────────────────────────────────
@@ -30,32 +27,29 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Non-root user
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-# Persistent volume mount point for SQLite database
+# Persistent volume mount point for SQLite
 RUN mkdir -p /data && chown nextjs:nodejs /data
 
-# Next.js standalone output
+# Next.js standalone output (includes traced JS node_modules)
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
-# Prisma schema + migrations (needed for migrate deploy at runtime)
+# Prisma schema + migrations
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 
-# Prisma generated client
+# Generated Prisma client
 COPY --from=builder --chown=nextjs:nodejs /app/app/generated ./app/generated
 
-# Prisma CLI + engines (needed to run migrate deploy on startup)
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+# Prisma CLI + migration engine (for prisma migrate deploy at startup)
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma/engines ./node_modules/@prisma/engines
 
-# better-sqlite3 native binary (traced by standalone but copy explicitly to be safe)
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/better-sqlite3 ./node_modules/better-sqlite3
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma/adapter-better-sqlite3 ./node_modules/@prisma/adapter-better-sqlite3
+# better-sqlite3 native binary (standalone doesn't reliably trace .node files)
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/better-sqlite3/build ./node_modules/better-sqlite3/build
 
 # Startup script
 COPY --chown=nextjs:nodejs docker-entrypoint.sh ./docker-entrypoint.sh
@@ -66,7 +60,6 @@ USER nextjs
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
-# Default DB path — override with DATABASE_URL env var in Railway
 ENV DATABASE_URL="file:/data/tokenscout.db"
 
 CMD ["./docker-entrypoint.sh"]
