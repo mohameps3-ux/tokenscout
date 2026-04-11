@@ -1,4 +1,4 @@
-// instrumentation.ts runs once on server startup
+// instrumentation.ts - runs once on server startup
 // Schedules token scanning (15 min) and prediction resolution (5 min)
 // Force Node.js runtime — do NOT run in Edge Runtime (uses native modules via Prisma)
 export const runtime = "nodejs";
@@ -11,7 +11,7 @@ export async function register() {
   g.__tokenscout_started__ = true;
 
   const SCAN_INTERVAL_MS = 15 * 60 * 1000;   // 15 minutes
-  const RESOLVE_INTERVAL_MS = 5 * 60 * 1000;  // 5 minutes
+  const RESOLVE_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
   const INITIAL_DELAY_MS = 10_000;            // 10s after startup
 
   async function runScan() {
@@ -49,3 +49,7 @@ export async function register() {
 
     setTimeout(async () => {
       await runResolver();
+      setInterval(runResolver, RESOLVE_INTERVAL_MS);
+    }, 5_000);
+  }, INITIAL_DELAY_MS);
+}
