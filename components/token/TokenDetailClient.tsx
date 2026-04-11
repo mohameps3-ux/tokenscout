@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Copy, Check, ExternalLink, TrendingUp, TrendingDown } from 'lucide-react';
-import PriceChart from './PriceChart';
+import { PriceChart } from './PriceChart';
 
 interface Pool {
   dexId: string;
@@ -81,7 +81,6 @@ function explorerUrl(chain: string, address: string): string {
 
 export function TokenDetailClient({ data }: Props) {
   const [activeTab, setActiveTab] = useState<'pools' | 'info'>('pools');
-  const [chartTimeframe, setChartTimeframe] = useState<'1H' | '4H' | '1D'>('1H');
 
   const pools = data.pools || [];
   const isSolana = data.chain === 'solana';
@@ -183,17 +182,9 @@ export function TokenDetailClient({ data }: Props) {
       <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-white font-semibold">Price Chart</h2>
-          <div className="flex gap-1">
-            {(['1H', '4H', '1D'] as const).map(tf => (
-              <button key={tf} onClick={() => setChartTimeframe(tf)}
-                className={`px-3 py-1 rounded text-xs font-medium transition-colors ${chartTimeframe === tf ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}`}>
-                {tf}
-              </button>
-            ))}
-          </div>
         </div>
         {data.ohlcv && data.ohlcv.length > 0 ? (
-          <PriceChart ohlcv={data.ohlcv} timeframe={chartTimeframe} />
+          <PriceChart ohlcv={data.ohlcv} />
         ) : (
           <div className="h-64 flex items-center justify-center text-gray-500 text-sm">
             No chart data available
