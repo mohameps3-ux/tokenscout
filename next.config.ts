@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
   // better-sqlite3 is a native Node module — must run server-side only
   serverExternalPackages: ["better-sqlite3", "@prisma/adapter-better-sqlite3"],
   experimental: {
