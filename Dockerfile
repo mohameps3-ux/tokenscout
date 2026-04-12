@@ -24,4 +24,4 @@ ENV NODE_ENV=production
 
 EXPOSE 8080
 
-CMD ["sh", "-c", "mkdir -p /data && node node_modules/prisma/build/index.js migrate deploy && node .next/standalone/server.js"]
+CMD ["sh", "-c", "mkdir -p /data && (node node_modules/prisma/build/index.js migrate deploy 2>&1 || echo '[startup] migrate deploy failed — continuing startup') && PORT=${PORT:-8080} node .next/standalone/server.js"]

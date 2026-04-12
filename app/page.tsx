@@ -6,7 +6,7 @@ import { DexTrendingSection } from "@/components/market/DexTrendingSection";
 import { CoinTable } from "@/components/market/CoinTable";
 
 async function getMarketData() {
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const base = process.env.NEXT_PUBLIC_APP_URL ?? `http://localhost:${process.env.PORT ?? 3000}`;
   try {
     const res = await fetch(`${base}/api/market`, { next: { revalidate: 60 } });
     if (!res.ok) return null;
