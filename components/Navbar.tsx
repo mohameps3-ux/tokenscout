@@ -15,7 +15,8 @@ export function Navbar() {
   const t = translations[lang].nav;
 
   const NAV = [
-    { href: "/", label: t.scanner },
+    { href: "/", label: "Markets" },
+    { href: "/scanner", label: t.scanner },
     { href: "/predict", label: t.predict },
     { href: "/dashboard", label: t.dashboard },
     { href: "/pricing", label: t.pricing },

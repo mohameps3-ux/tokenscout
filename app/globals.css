@@ -99,3 +99,32 @@ body {
 .pulse-dot {
   animation: pulse-dot 2s ease-in-out infinite;
 }
+
+/* Scrolling ticker */
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-track {
+  animation: ticker-scroll 40s linear infinite;
+  width: max-content;
+}
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+/* Price flash animations */
+@keyframes flash-up {
+  0%   { background-color: rgba(16, 185, 129, 0.25); color: #6ee7b7; }
+  100% { background-color: transparent; color: inherit; }
+}
+@keyframes flash-down {
+  0%   { background-color: rgba(239, 68, 68, 0.25); color: #fca5a5; }
+  100% { background-color: transparent; color: inherit; }
+}
+.price-flash-up   { animation: flash-up   1.2s ease-out forwards; }
+.price-flash-down { animation: flash-down 1.2s ease-out forwards; }
+
+/* Hide scrollbar for trending section */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

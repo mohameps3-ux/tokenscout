@@ -3,6 +3,7 @@ export type Lang = "en" | "es";
 export const translations = {
   en: {
     nav: {
+      markets: "Markets",
       scanner: "Scanner",
       predict: "Predict",
       dashboard: "Dashboard",
@@ -17,6 +18,7 @@ export const translations = {
   },
   es: {
     nav: {
+      markets: "Mercados",
       scanner: "Escáner",
       predict: "Predecir",
       dashboard: "Panel",

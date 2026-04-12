@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { normalizeChain } from "@/lib/chains";
 import { NextRequest } from "next/server";
 
 const PAGE_SIZE = 20;
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
     else if (age === "7d") createdAfter = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
     const where = {
-      ...(chain && chain !== "ALL" ? { chain: chain as "BASE" | "SOLANA" } : {}),
+      ...(chain && chain !== "ALL" ? { chain: normalizeChain(chain) ?? chain } : {}),
       ...(minScore > 0 ? { totalScore: { gte: minScore } } : {}),
       ...(minLiquidity > 0 ? { liquidity: { gte: minLiquidity } } : {}),
       ...(createdAfter ? { createdAt: { gte: createdAfter } } : {}),
