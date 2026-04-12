@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScoreBar } from "@/components/dashboard/ScoreBar";
 import { formatUsd, formatPercent, formatAge, truncateAddress } from "@/lib/utils";
 import { getScoreLabel } from "@/lib/scoring/scorer";
+import { computeAiScore } from "@/lib/scoring/aiScore";
 import { ExternalLink, AlertTriangle } from "lucide-react";
 
 interface TokenCardProps {
@@ -38,6 +39,11 @@ export function TokenCard({ token }: TokenCardProps) {
   const priceUp = (token.priceChange24h ?? 0) >= 0;
   const dexUrl = getDexUrl(token);
   const detailUrl = `/token/${token.chain.toLowerCase()}/${token.address}`;
+  const aiScore = computeAiScore({
+    liquidity: token.liquidity,
+    volume24h: token.volume24h,
+    pairCreatedAt: token.listedAt ? new Date(token.listedAt).getTime() : null,
+  });
 
   return (
     <div
@@ -77,6 +83,14 @@ export function TokenCard({ token }: TokenCardProps) {
           </div>
         </div>
       </Link>
+
+      {/* AI Confidence badge */}
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-zinc-500">AI Confidence:</span>
+        <span className={`text-xs font-semibold ${aiScore.color}`}>
+          {aiScore.score}% ({aiScore.label})
+        </span>
+      </div>
 
       {/* Score bar */}
       <ScoreBar score={token.totalScore} size="sm" showLabel={false} />

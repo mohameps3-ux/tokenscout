@@ -19,6 +19,7 @@ export function Navbar() {
     { href: "/scanner", label: t.scanner },
     { href: "/predict", label: t.predict },
     { href: "/dashboard", label: t.dashboard },
+    { href: "/referral", label: "Referral" },
     { href: "/pricing", label: t.pricing },
   ];
 
