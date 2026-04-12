@@ -1,10 +1,20 @@
 import { PrismaClient } from "@/app/generated/prisma/client";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-import path from "path";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
+
+function resolvePath(dbPath: string): string {
+  // If already absolute path (starts with / on Linux or X:\ on Windows), use as-is
+  if (dbPath.startsWith("/") || /^[A-Za-z]:[\\/]/.test(dbPath)) {
+    return dbPath;
+  }
+  // Join with cwd using simple string concatenation (avoids node:path Edge Runtime issue)
+  const cwd = process.cwd();
+  const sep = cwd.includes("\\") ? "\\" : "/";
+  return cwd.endsWith(sep) ? cwd + dbPath : cwd + sep + dbPath;
+}
 
 function createPrismaClient(): PrismaClient {
   const dbUrl = process.env.DATABASE_URL ?? "file:./prisma/tokenscout.db";
@@ -12,10 +22,7 @@ function createPrismaClient(): PrismaClient {
   const dbPath = dbUrl.startsWith("file:") ? dbUrl.slice(5) : dbUrl;
 
   // Resolve relative paths from the project root (cwd)
-  // turbopackIgnore: true
-  const resolvedPath = path.isAbsolute(dbPath)
-    ? dbPath
-    : path.join(/*turbopackIgnore: true*/ process.cwd(), dbPath);
+  const resolvedPath = resolvePath(dbPath);
 
   const adapter = new PrismaBetterSqlite3({ url: resolvedPath });
 
