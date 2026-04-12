@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { cookies } from "next/headers";
-import { getStripe, PRO_PRICE_ID, isStripeConfigured } from "@/lib/stripe";
+import { getStripe, PRO_PRICE_ID, SUPER_PRO_PRICE_ID, LIFETIME_PRICE_ID, isStripeConfigured } from "@/lib/stripe";
 import { SESSION_COOKIE } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 
@@ -23,13 +23,24 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: "User not found" }, { status: 404 });
   }
 
-  if (user.tier === "PRO") {
-    return Response.json({ error: "Already subscribed to Pro" }, { status: 409 });
+  // Determine which plan is being purchased
+  const body = await request.json().catch(() => ({}));
+  const tier: string = body.tier ?? "PRO";
+
+  const TIER_CONFIG: Record<string, { priceId: string; mode: "subscription" | "payment"; label: string }> = {
+    PRO:       { priceId: PRO_PRICE_ID,       mode: "subscription", label: "Pro" },
+    SUPER_PRO: { priceId: SUPER_PRO_PRICE_ID, mode: "subscription", label: "Super Pro" },
+    LIFETIME:  { priceId: LIFETIME_PRICE_ID,  mode: "payment",      label: "Lifetime" },
+  };
+
+  const config = TIER_CONFIG[tier];
+  if (!config) {
+    return Response.json({ error: "Invalid tier" }, { status: 400 });
   }
 
-  if (!PRO_PRICE_ID || PRO_PRICE_ID === "price_placeholder") {
+  if (!config.priceId || config.priceId === "price_placeholder") {
     return Response.json(
-      { error: "STRIPE_PRO_PRICE_ID is not configured. Create a price in Stripe dashboard." },
+      { error: `STRIPE_${tier}_PRICE_ID is not configured. Create a price in the Stripe dashboard.` },
       { status: 503 }
     );
   }
@@ -50,18 +61,20 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const session = await stripe.checkout.sessions.create({
+  const baseSessionParams = {
     customer: customerId,
-    mode: "subscription",
-    line_items: [{ price: PRO_PRICE_ID, quantity: 1 }],
-    success_url: `${appUrl}/pricing?success=1`,
+    line_items: [{ price: config.priceId, quantity: 1 }],
+    success_url: `${appUrl}/pricing?success=1&tier=${tier.toLowerCase()}`,
     cancel_url: `${appUrl}/pricing?canceled=1`,
-    metadata: { tokenscoutUserId: user.id },
-    subscription_data: {
-      metadata: { tokenscoutUserId: user.id },
-    },
+    metadata: { tokenscoutUserId: user.id, tier },
     allow_promotion_codes: true,
-  });
+  };
+
+  const session = await stripe.checkout.sessions.create(
+    config.mode === "subscription"
+      ? { ...baseSessionParams, mode: "subscription", subscription_data: { metadata: { tokenscoutUserId: user.id, tier } } }
+      : { ...baseSessionParams, mode: "payment" }
+  );
 
   return Response.json({ url: session.url });
 }

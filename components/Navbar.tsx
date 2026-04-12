@@ -3,18 +3,23 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Activity, Zap } from "lucide-react";
+import { Zap } from "lucide-react";
 import { SearchBar } from "@/components/SearchBar";
-
-const NAV = [
-  { href: "/", label: "Scanner" },
-  { href: "/predict", label: "Predict" },
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/pricing", label: "Pricing" },
-];
+import { SettingsMenu } from "@/components/SettingsMenu";
+import { useApp } from "@/components/AppProvider";
+import { translations } from "@/lib/i18n";
 
 export function Navbar() {
   const pathname = usePathname();
+  const { lang } = useApp();
+  const t = translations[lang].nav;
+
+  const NAV = [
+    { href: "/", label: t.scanner },
+    { href: "/predict", label: t.predict },
+    { href: "/dashboard", label: t.dashboard },
+    { href: "/pricing", label: t.pricing },
+  ];
 
   return (
     <header className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/90 backdrop-blur-md">
@@ -54,15 +59,16 @@ export function Navbar() {
             ))}
           </nav>
 
-          {/* Live indicator */}
-          <div className="hidden sm:flex items-center gap-2 text-xs text-zinc-500 shrink-0">
-            <span className="flex items-center gap-1.5">
+          {/* Live indicator + Settings */}
+          <div className="hidden sm:flex items-center gap-3 shrink-0">
+            <span className="flex items-center gap-1.5 text-xs text-zinc-500">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
               Live
             </span>
+            <SettingsMenu />
           </div>
         </div>
       </div>

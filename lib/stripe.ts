@@ -22,33 +22,42 @@ export function isStripeConfigured(): boolean {
   return key.length > 10 && !key.includes("placeholder");
 }
 
-export const PRO_PRICE_ID = process.env.STRIPE_PRO_PRICE_ID ?? "";
+export const PRO_PRICE_ID       = process.env.STRIPE_PRO_PRICE_ID        ?? "";
+export const SUPER_PRO_PRICE_ID = process.env.STRIPE_SUPER_PRO_PRICE_ID  ?? "";
+export const LIFETIME_PRICE_ID  = process.env.STRIPE_LIFETIME_PRICE_ID   ?? "";
 
 export const PLANS = {
   FREE: {
     name: "Free",
     price: 0,
+    billing: "free" as const,
     tokens: 10,
-    refreshMinutes: 360, // 6 hours
+    refreshMinutes: 360,
+    priceId: null,
     features: [
       "Top 10 tokens per scan",
       "6-hour data refresh",
-      "Prediction game (unlimited)",
+      "Safety score (0–100)",
+      "Honeypot detection",
+      "Prediction game",
       "ELO leaderboard",
-      "Vs AI mode",
     ],
     missing: [
-      "Real-time token updates",
-      "Full token list (100+)",
-      "Telegram push alerts",
-      "Pro badge",
+      "Real-time data",
+      "Full token list",
+      "Telegram alerts",
+      "Advanced filters",
+      "AI predictions",
+      "Anti-rug detection",
     ],
   },
   PRO: {
     name: "Pro",
     price: 9.99,
-    tokens: null, // unlimited
+    billing: "monthly" as const,
+    tokens: null,
     refreshMinutes: 15,
+    priceId: PRO_PRICE_ID,
     features: [
       "All tokens — no limits",
       "15-minute refresh (real-time)",
@@ -56,6 +65,45 @@ export const PLANS = {
       "Priority scan queue",
       "Prediction game (unlimited)",
       "Pro badge on leaderboard",
+    ],
+    missing: [
+      "Advanced filters",
+      "AI predictions",
+      "Anti-rug detection",
+      "Priority alerts",
+    ],
+  },
+  SUPER_PRO: {
+    name: "Super Pro",
+    price: 19.99,
+    billing: "monthly" as const,
+    tokens: null,
+    refreshMinutes: 5,
+    priceId: SUPER_PRO_PRICE_ID,
+    features: [
+      "Everything in Pro",
+      "5-minute refresh",
+      "Advanced filters & analytics",
+      "AI-powered predictions",
+      "Anti-rug detection",
+      "Priority Telegram alerts",
+      "Super Pro badge",
+    ],
+    missing: [],
+  },
+  LIFETIME: {
+    name: "Lifetime",
+    price: 49.99,
+    billing: "once" as const,
+    tokens: null,
+    refreshMinutes: 5,
+    priceId: LIFETIME_PRICE_ID,
+    features: [
+      "Everything in Super Pro",
+      "One-time payment, no monthly fee",
+      "Early access to new features",
+      "Lifetime badge",
+      "Direct support channel",
     ],
     missing: [],
   },
