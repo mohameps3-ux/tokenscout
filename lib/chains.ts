@@ -1,4 +1,4 @@
-export const CHAINS = ["BASE", "SOLANA", "ETHEREUM", "POLYGON", "ARBITRUM", "AVALANCHE"] as const;
+export const CHAINS = ["BASE", "SOLANA", "ETHEREUM", "POLYGON", "ARBITRUM", "AVALANCHE", "BSC", "FANTOM", "OPTIMISM", "ZKSYNC"] as const;
 export type Chain = typeof CHAINS[number];
 
 export interface ChainConfig {
@@ -81,6 +81,51 @@ export const CHAIN_CONFIG: Record<Chain, ChainConfig> = {
       { label: "Trader Joe", url: `https://traderjoexyz.com/avalanche/trade?outputCurrency=${a}`, color: "text-red-400 border-red-500/30 bg-red-500/10" },
     ],
     color: "text-red-400",
+  },
+  BSC: {
+    label: "BNB Chain",
+    geckoId: "bsc",
+    dexId: "bsc",
+    explorerName: "BscScan",
+    explorerUrl: (a) => `https://bscscan.com/token/${a}`,
+    tradeLinks: (a) => [
+      { label: "PancakeSwap", url: `https://pancakeswap.finance/swap?outputCurrency=${a}`, color: "text-yellow-400 border-yellow-500/30 bg-yellow-500/10" },
+    ],
+    color: "text-yellow-400",
+  },
+  FANTOM: {
+    label: "Fantom",
+    geckoId: "ftm",
+    dexId: "fantom",
+    explorerName: "FTMScan",
+    explorerUrl: (a) => `https://ftmscan.com/token/${a}`,
+    tradeLinks: (a) => [
+      { label: "SpookySwap", url: `https://spooky.fi/#/swap?outputCurrency=${a}`, color: "text-blue-300 border-blue-300/30 bg-blue-300/10" },
+    ],
+    color: "text-blue-300",
+  },
+  OPTIMISM: {
+    label: "Optimism",
+    geckoId: "optimism",
+    dexId: "optimism",
+    explorerName: "Optimistic Etherscan",
+    explorerUrl: (a) => `https://optimistic.etherscan.io/token/${a}`,
+    tradeLinks: (a, pair) => [
+      { label: "Uniswap", url: pair ? `https://app.uniswap.org/explore/pools/optimism/${pair}` : `https://app.uniswap.org/swap?outputCurrency=${a}&chain=optimism`, color: "text-pink-400 border-pink-500/30 bg-pink-500/10" },
+      { label: "Velodrome", url: `https://velodrome.finance/swap?to=${a}`, color: "text-red-300 border-red-300/30 bg-red-300/10" },
+    ],
+    color: "text-red-300",
+  },
+  ZKSYNC: {
+    label: "zkSync",
+    geckoId: "zksync",
+    dexId: "zksync",
+    explorerName: "zkSync Explorer",
+    explorerUrl: (a) => `https://explorer.zksync.io/address/${a}`,
+    tradeLinks: (a) => [
+      { label: "SyncSwap", url: `https://syncswap.xyz/#/swap?to=${a}`, color: "text-cyan-400 border-cyan-500/30 bg-cyan-500/10" },
+    ],
+    color: "text-cyan-400",
   },
 };
 
