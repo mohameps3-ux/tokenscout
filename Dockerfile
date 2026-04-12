@@ -12,8 +12,12 @@ RUN npm ci
 
 COPY . .
 
-# Use --no-turbopack to avoid Edge Runtime compilation issues with Prisma/node:path
-RUN npx prisma generate && npm run build
+RUN npx prisma generate && npx next build
+
+# Copy static assets into the standalone output — the standalone server does not
+# include these automatically and will 503 on /_next/static/* without them.
+RUN cp -r .next/static .next/standalone/.next/static && \
+    cp -r public .next/standalone/public
 
 ENV HOSTNAME=0.0.0.0
 ENV NODE_ENV=production
