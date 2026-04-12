@@ -15,9 +15,9 @@ COPY . .
 # Use --no-turbopack to avoid Edge Runtime compilation issues with Prisma/node:path
 RUN npx prisma generate && npm run build
 
-EXPOSE 3000
-ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 ENV NODE_ENV=production
 
-CMD ["node", ".next/standalone/server.js"]
+EXPOSE 8080
+
+CMD ["sh", "-c", "mkdir -p /data && node node_modules/prisma/build/index.js migrate deploy && node .next/standalone/server.js"]
