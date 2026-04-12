@@ -7,6 +7,7 @@ import { CopyAddress } from "@/components/token/CopyAddress";
 import { AntiRug2Card } from "@/components/token/AntiRug2Card";
 import { TradeWidget } from "@/components/token/TradeWidget";
 import { WhaleActivity } from "@/components/token/WhaleActivity";
+import { DeployerInfoCard } from "@/components/token/DeployerInfoCard";
 import { ScoreBar, ScoreBreakdown } from "@/components/dashboard/ScoreBar";
 import { Badge } from "@/components/ui/badge";
 import { formatUsd, formatPercent, formatAge, formatNumber } from "@/lib/utils";
@@ -415,6 +416,9 @@ export function TokenDetailClient({ data, currentTimeframe }: TokenDetailClientP
                   flags={score.flags ?? []}
                 />
               )}
+
+              {/* Deployer / Contract Security (GoPlus) */}
+              <DeployerInfoCard chain={chain} address={address} />
             </div>
           </div>
 

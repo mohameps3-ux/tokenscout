@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Zap } from "lucide-react";
+import { Zap, Moon, Sun } from "lucide-react";
 import { SearchBar } from "@/components/SearchBar";
 import { SettingsMenu } from "@/components/SettingsMenu";
 import { useApp } from "@/components/AppProvider";
@@ -11,7 +11,7 @@ import { translations } from "@/lib/i18n";
 
 export function Navbar() {
   const pathname = usePathname();
-  const { lang } = useApp();
+  const { lang, theme, toggleTheme } = useApp();
   const t = translations[lang].nav;
 
   const NAV = [
@@ -19,7 +19,8 @@ export function Navbar() {
     { href: "/scanner", label: t.scanner },
     { href: "/predict", label: t.predict },
     { href: "/dashboard", label: t.dashboard },
-    { href: "/referral", label: "Referral" },
+    { href: "/referral", label: t.referral },
+    { href: "/alerts", label: t.alerts },
     { href: "/pricing", label: t.pricing },
   ];
 
@@ -61,7 +62,7 @@ export function Navbar() {
             ))}
           </nav>
 
-          {/* Live indicator + Settings */}
+          {/* Live indicator + Theme toggle + Settings */}
           <div className="hidden sm:flex items-center gap-3 shrink-0">
             <span className="flex items-center gap-1.5 text-xs text-zinc-500">
               <span className="relative flex h-2 w-2">
@@ -70,6 +71,15 @@ export function Navbar() {
               </span>
               Live
             </span>
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+              className="flex items-center justify-center w-8 h-8 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+            >
+              {theme === "dark"
+                ? <Sun className="w-4 h-4 text-amber-400" />
+                : <Moon className="w-4 h-4" />}
+            </button>
             <SettingsMenu />
           </div>
         </div>

@@ -1,6 +1,7 @@
 import { Telegraf } from "telegraf";
 import type { Token } from "@/app/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { computeAiScore } from "@/lib/scoring/aiScore";
 
 let _bot: Telegraf | null = null;
 
@@ -44,8 +45,9 @@ export function buildAlertMessage(
   const change = token.priceChange24h ?? 0;
   const arrow = change >= 0 ? "📈" : "📉";
   const dexLink = getDexLink(token);
-  const chainLabel = token.chain === "SOLANA" ? "Solana" : "Base";
+  const chainLabel = token.chain === "SOLANA" ? "Solana" : token.chain;
   const dexLabel = token.chain === "SOLANA" ? "Jupiter" : "Uniswap";
+  const aiScore = computeAiScore({ liquidity: token.liquidity, volume24h: token.volume24h, pairCreatedAt: null });
 
   return [
     `🔥 *New Alpha Alert — Score ${token.totalScore}/100*`,
@@ -56,8 +58,10 @@ export function buildAlertMessage(
     `24h: ${arrow} ${change >= 0 ? "+" : ""}${change.toFixed(2)}%`,
     `Liquidity: ${formatUsdCompact(token.liquidity)}`,
     `Volume: ${formatUsdCompact(token.volume24h)}`,
+    `AI Confidence: ${aiScore.score}% (${aiScore.label})`,
     ``,
     `[Trade on ${dexLabel}](${dexLink})`,
+    `[View on TokenScout](${process.env.NEXT_PUBLIC_APP_URL ?? "https://tokenscout-production.up.railway.app"}/token/${token.chain.toLowerCase()}/${token.address})`,
     ``,
     `_TokenScout 2.0 — Not financial advice_`,
   ].join("\n");
@@ -138,6 +142,10 @@ export async function checkAlertRulesAndNotify(
       if (rule.chain && t.chain !== rule.chain) return false;
       if (rule.minLiquidity && (t.liquidity ?? 0) < rule.minLiquidity) return false;
       if (rule.minPriceChange && Math.abs(t.priceChange24h ?? 0) < rule.minPriceChange) return false;
+      if (rule.minAiScore > 0) {
+        const ai = computeAiScore({ liquidity: t.liquidity, volume24h: t.volume24h, pairCreatedAt: null });
+        if (ai.score < rule.minAiScore) return false;
+      }
       return true;
     });
 

@@ -30,12 +30,14 @@ export type AlertRuleAvgAggregateOutputType = {
   minScore: number | null
   minLiquidity: number | null
   minPriceChange: number | null
+  minAiScore: number | null
 }
 
 export type AlertRuleSumAggregateOutputType = {
   minScore: number | null
   minLiquidity: number | null
   minPriceChange: number | null
+  minAiScore: number | null
 }
 
 export type AlertRuleMinAggregateOutputType = {
@@ -48,6 +50,7 @@ export type AlertRuleMinAggregateOutputType = {
   minLiquidity: number | null
   chain: string | null
   minPriceChange: number | null
+  minAiScore: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -62,6 +65,7 @@ export type AlertRuleMaxAggregateOutputType = {
   minLiquidity: number | null
   chain: string | null
   minPriceChange: number | null
+  minAiScore: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -76,6 +80,7 @@ export type AlertRuleCountAggregateOutputType = {
   minLiquidity: number
   chain: number
   minPriceChange: number
+  minAiScore: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -86,12 +91,14 @@ export type AlertRuleAvgAggregateInputType = {
   minScore?: true
   minLiquidity?: true
   minPriceChange?: true
+  minAiScore?: true
 }
 
 export type AlertRuleSumAggregateInputType = {
   minScore?: true
   minLiquidity?: true
   minPriceChange?: true
+  minAiScore?: true
 }
 
 export type AlertRuleMinAggregateInputType = {
@@ -104,6 +111,7 @@ export type AlertRuleMinAggregateInputType = {
   minLiquidity?: true
   chain?: true
   minPriceChange?: true
+  minAiScore?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -118,6 +126,7 @@ export type AlertRuleMaxAggregateInputType = {
   minLiquidity?: true
   chain?: true
   minPriceChange?: true
+  minAiScore?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -132,6 +141,7 @@ export type AlertRuleCountAggregateInputType = {
   minLiquidity?: true
   chain?: true
   minPriceChange?: true
+  minAiScore?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -233,6 +243,7 @@ export type AlertRuleGroupByOutputType = {
   minLiquidity: number | null
   chain: string | null
   minPriceChange: number | null
+  minAiScore: number
   createdAt: Date
   updatedAt: Date
   _count: AlertRuleCountAggregateOutputType | null
@@ -270,6 +281,7 @@ export type AlertRuleWhereInput = {
   minLiquidity?: Prisma.FloatNullableFilter<"AlertRule"> | number | null
   chain?: Prisma.StringNullableFilter<"AlertRule"> | string | null
   minPriceChange?: Prisma.FloatNullableFilter<"AlertRule"> | number | null
+  minAiScore?: Prisma.IntFilter<"AlertRule"> | number
   createdAt?: Prisma.DateTimeFilter<"AlertRule"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AlertRule"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -285,6 +297,7 @@ export type AlertRuleOrderByWithRelationInput = {
   minLiquidity?: Prisma.SortOrderInput | Prisma.SortOrder
   chain?: Prisma.SortOrderInput | Prisma.SortOrder
   minPriceChange?: Prisma.SortOrderInput | Prisma.SortOrder
+  minAiScore?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
@@ -303,6 +316,7 @@ export type AlertRuleWhereUniqueInput = Prisma.AtLeast<{
   minLiquidity?: Prisma.FloatNullableFilter<"AlertRule"> | number | null
   chain?: Prisma.StringNullableFilter<"AlertRule"> | string | null
   minPriceChange?: Prisma.FloatNullableFilter<"AlertRule"> | number | null
+  minAiScore?: Prisma.IntFilter<"AlertRule"> | number
   createdAt?: Prisma.DateTimeFilter<"AlertRule"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AlertRule"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -318,6 +332,7 @@ export type AlertRuleOrderByWithAggregationInput = {
   minLiquidity?: Prisma.SortOrderInput | Prisma.SortOrder
   chain?: Prisma.SortOrderInput | Prisma.SortOrder
   minPriceChange?: Prisma.SortOrderInput | Prisma.SortOrder
+  minAiScore?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.AlertRuleCountOrderByAggregateInput
@@ -340,6 +355,7 @@ export type AlertRuleScalarWhereWithAggregatesInput = {
   minLiquidity?: Prisma.FloatNullableWithAggregatesFilter<"AlertRule"> | number | null
   chain?: Prisma.StringNullableWithAggregatesFilter<"AlertRule"> | string | null
   minPriceChange?: Prisma.FloatNullableWithAggregatesFilter<"AlertRule"> | number | null
+  minAiScore?: Prisma.IntWithAggregatesFilter<"AlertRule"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"AlertRule"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"AlertRule"> | Date | string
 }
@@ -353,6 +369,7 @@ export type AlertRuleCreateInput = {
   minLiquidity?: number | null
   chain?: string | null
   minPriceChange?: number | null
+  minAiScore?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutAlertRulesInput
@@ -368,6 +385,7 @@ export type AlertRuleUncheckedCreateInput = {
   minLiquidity?: number | null
   chain?: string | null
   minPriceChange?: number | null
+  minAiScore?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -381,6 +399,7 @@ export type AlertRuleUpdateInput = {
   minLiquidity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   chain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   minPriceChange?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  minAiScore?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutAlertRulesNestedInput
@@ -396,6 +415,7 @@ export type AlertRuleUncheckedUpdateInput = {
   minLiquidity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   chain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   minPriceChange?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  minAiScore?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -410,6 +430,7 @@ export type AlertRuleCreateManyInput = {
   minLiquidity?: number | null
   chain?: string | null
   minPriceChange?: number | null
+  minAiScore?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -423,6 +444,7 @@ export type AlertRuleUpdateManyMutationInput = {
   minLiquidity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   chain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   minPriceChange?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  minAiScore?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -437,6 +459,7 @@ export type AlertRuleUncheckedUpdateManyInput = {
   minLiquidity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   chain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   minPriceChange?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  minAiScore?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -461,6 +484,7 @@ export type AlertRuleCountOrderByAggregateInput = {
   minLiquidity?: Prisma.SortOrder
   chain?: Prisma.SortOrder
   minPriceChange?: Prisma.SortOrder
+  minAiScore?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -469,6 +493,7 @@ export type AlertRuleAvgOrderByAggregateInput = {
   minScore?: Prisma.SortOrder
   minLiquidity?: Prisma.SortOrder
   minPriceChange?: Prisma.SortOrder
+  minAiScore?: Prisma.SortOrder
 }
 
 export type AlertRuleMaxOrderByAggregateInput = {
@@ -481,6 +506,7 @@ export type AlertRuleMaxOrderByAggregateInput = {
   minLiquidity?: Prisma.SortOrder
   chain?: Prisma.SortOrder
   minPriceChange?: Prisma.SortOrder
+  minAiScore?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -495,6 +521,7 @@ export type AlertRuleMinOrderByAggregateInput = {
   minLiquidity?: Prisma.SortOrder
   chain?: Prisma.SortOrder
   minPriceChange?: Prisma.SortOrder
+  minAiScore?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -503,6 +530,7 @@ export type AlertRuleSumOrderByAggregateInput = {
   minScore?: Prisma.SortOrder
   minLiquidity?: Prisma.SortOrder
   minPriceChange?: Prisma.SortOrder
+  minAiScore?: Prisma.SortOrder
 }
 
 export type AlertRuleCreateNestedManyWithoutUserInput = {
@@ -568,6 +596,7 @@ export type AlertRuleCreateWithoutUserInput = {
   minLiquidity?: number | null
   chain?: string | null
   minPriceChange?: number | null
+  minAiScore?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -581,6 +610,7 @@ export type AlertRuleUncheckedCreateWithoutUserInput = {
   minLiquidity?: number | null
   chain?: string | null
   minPriceChange?: number | null
+  minAiScore?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -623,6 +653,7 @@ export type AlertRuleScalarWhereInput = {
   minLiquidity?: Prisma.FloatNullableFilter<"AlertRule"> | number | null
   chain?: Prisma.StringNullableFilter<"AlertRule"> | string | null
   minPriceChange?: Prisma.FloatNullableFilter<"AlertRule"> | number | null
+  minAiScore?: Prisma.IntFilter<"AlertRule"> | number
   createdAt?: Prisma.DateTimeFilter<"AlertRule"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"AlertRule"> | Date | string
 }
@@ -636,6 +667,7 @@ export type AlertRuleCreateManyUserInput = {
   minLiquidity?: number | null
   chain?: string | null
   minPriceChange?: number | null
+  minAiScore?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -649,6 +681,7 @@ export type AlertRuleUpdateWithoutUserInput = {
   minLiquidity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   chain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   minPriceChange?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  minAiScore?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -662,6 +695,7 @@ export type AlertRuleUncheckedUpdateWithoutUserInput = {
   minLiquidity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   chain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   minPriceChange?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  minAiScore?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -675,6 +709,7 @@ export type AlertRuleUncheckedUpdateManyWithoutUserInput = {
   minLiquidity?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   chain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   minPriceChange?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  minAiScore?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -691,6 +726,7 @@ export type AlertRuleSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   minLiquidity?: boolean
   chain?: boolean
   minPriceChange?: boolean
+  minAiScore?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -706,6 +742,7 @@ export type AlertRuleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   minLiquidity?: boolean
   chain?: boolean
   minPriceChange?: boolean
+  minAiScore?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -721,6 +758,7 @@ export type AlertRuleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   minLiquidity?: boolean
   chain?: boolean
   minPriceChange?: boolean
+  minAiScore?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -736,11 +774,12 @@ export type AlertRuleSelectScalar = {
   minLiquidity?: boolean
   chain?: boolean
   minPriceChange?: boolean
+  minAiScore?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type AlertRuleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "enabled" | "label" | "telegramChatId" | "minScore" | "minLiquidity" | "chain" | "minPriceChange" | "createdAt" | "updatedAt", ExtArgs["result"]["alertRule"]>
+export type AlertRuleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "enabled" | "label" | "telegramChatId" | "minScore" | "minLiquidity" | "chain" | "minPriceChange" | "minAiScore" | "createdAt" | "updatedAt", ExtArgs["result"]["alertRule"]>
 export type AlertRuleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -766,6 +805,7 @@ export type $AlertRulePayload<ExtArgs extends runtime.Types.Extensions.InternalA
     minLiquidity: number | null
     chain: string | null
     minPriceChange: number | null
+    minAiScore: number
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["alertRule"]>
@@ -1201,6 +1241,7 @@ export interface AlertRuleFieldRefs {
   readonly minLiquidity: Prisma.FieldRef<"AlertRule", 'Float'>
   readonly chain: Prisma.FieldRef<"AlertRule", 'String'>
   readonly minPriceChange: Prisma.FieldRef<"AlertRule", 'Float'>
+  readonly minAiScore: Prisma.FieldRef<"AlertRule", 'Int'>
   readonly createdAt: Prisma.FieldRef<"AlertRule", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"AlertRule", 'DateTime'>
 }

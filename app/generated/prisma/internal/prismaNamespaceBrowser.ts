@@ -105,6 +105,7 @@ export const AlertRuleScalarFieldEnum = {
   minLiquidity: 'minLiquidity',
   chain: 'chain',
   minPriceChange: 'minPriceChange',
+  minAiScore: 'minAiScore',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

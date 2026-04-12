@@ -82,16 +82,35 @@ export function AntiRug2Card({
 
       {/* Insider detection */}
       {insiderBuyCount > 0 && (
-        <div className={`flex items-start gap-2 text-xs rounded-lg px-3 py-2.5 border ${
+        <div className={`rounded-lg px-3 py-2.5 border space-y-1.5 ${
           insiderBuyCount >= 10
-            ? "bg-red-500/10 border-red-500/20 text-red-400"
-            : "bg-orange-500/10 border-orange-500/20 text-orange-400"
+            ? "bg-red-500/10 border-red-500/20"
+            : "bg-orange-500/10 border-orange-500/20"
         }`}>
-          <Users className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-          <div>
+          <div className={`flex items-center gap-2 text-xs ${insiderBuyCount >= 10 ? "text-red-400" : "text-orange-400"}`}>
+            <Users className="w-3.5 h-3.5 shrink-0" />
             <span className="font-semibold">Coordinated Buy Detected</span>
-            <span className="ml-1 text-zinc-400">
-              ~{insiderBuyCount} wallet{insiderBuyCount !== 1 ? "s" : ""} bought within first hour
+            <span className={`ml-auto font-bold px-1.5 py-0.5 rounded-full text-[10px] ${
+              insiderBuyCount >= 10 ? "bg-red-500/20" : "bg-orange-500/20"
+            }`}>
+              ~{insiderBuyCount} wallets
+            </span>
+          </div>
+          <p className="text-xs text-zinc-500 pl-5">
+            {insiderBuyCount >= 10
+              ? `${insiderBuyCount} suspected insider wallets coordinated buys within the first hour of trading. High probability of organized pump.`
+              : `${insiderBuyCount} wallet${insiderBuyCount !== 1 ? "s" : ""} showed coordinated buy behaviour within the first hour — possible team or insider activity.`}
+          </p>
+          <div className="pl-5 flex gap-2 flex-wrap">
+            <span className="text-[10px] text-zinc-600 bg-zinc-800 px-2 py-0.5 rounded-full">
+              First-hour concentration
+            </span>
+            <span className={`text-[10px] px-2 py-0.5 rounded-full ${
+              insiderBuyCount >= 10
+                ? "text-red-400 bg-red-500/10"
+                : "text-orange-400 bg-orange-500/10"
+            }`}>
+              {insiderBuyCount >= 10 ? "Very High Risk" : insiderBuyCount >= 5 ? "High Risk" : "Moderate Risk"}
             </span>
           </div>
         </div>
