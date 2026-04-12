@@ -1,5 +1,3 @@
-export const runtime = 'nodejs';
-
 import { NextRequest } from "next/server";
 import { isTelegramConfigured, sendTokenAlert } from "@/lib/telegram";
 import { prisma } from "@/lib/prisma";
@@ -36,3 +34,7 @@ export async function POST(request: NextRequest) {
 // GET /api/telegram — status check
 export async function GET() {
   return Response.json({
+    configured: isTelegramConfigured(),
+    chatId: process.env.TELEGRAM_ALERT_CHAT_ID ? "set" : "not set",
+  });
+}
