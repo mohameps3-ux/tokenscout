@@ -1,11 +1,7 @@
 import axios from "axios";
+import { type Chain, CHAIN_CONFIG } from "@/lib/chains";
 
 const BASE_URL = "https://api.geckoterminal.com/api/v2";
-
-const CHAIN_MAP: Record<string, string> = {
-  BASE: "base",
-  SOLANA: "solana",
-};
 
 export interface GeckoPool {
   id: string;
@@ -65,11 +61,12 @@ export interface GeckoNewPoolsResponse {
   included?: GeckoToken[];
 }
 
-export async function fetchNewPools(chain: "BASE" | "SOLANA"): Promise<GeckoNewPoolsResponse> {
+export async function fetchNewPools(chain: Chain): Promise<GeckoNewPoolsResponse> {
+  const geckoId = CHAIN_CONFIG[chain].geckoId;
+  if (!geckoId) return { data: [] };
   try {
-    const chainId = CHAIN_MAP[chain];
     const response = await axios.get<GeckoNewPoolsResponse>(
-      `${BASE_URL}/networks/${chainId}/new_pools`,
+      `${BASE_URL}/networks/${geckoId}/new_pools`,
       {
         params: { include: "base_token,quote_token", page: 1 },
         headers: { Accept: "application/json;version=20230302" },
@@ -83,11 +80,12 @@ export async function fetchNewPools(chain: "BASE" | "SOLANA"): Promise<GeckoNewP
   }
 }
 
-export async function fetchTrendingPools(chain: "BASE" | "SOLANA"): Promise<GeckoNewPoolsResponse> {
+export async function fetchTrendingPools(chain: Chain): Promise<GeckoNewPoolsResponse> {
+  const geckoId = CHAIN_CONFIG[chain].geckoId;
+  if (!geckoId) return { data: [] };
   try {
-    const chainId = CHAIN_MAP[chain];
     const response = await axios.get<GeckoNewPoolsResponse>(
-      `${BASE_URL}/networks/${chainId}/trending_pools`,
+      `${BASE_URL}/networks/${geckoId}/trending_pools`,
       {
         params: { include: "base_token,quote_token" },
         headers: { Accept: "application/json;version=20230302" },

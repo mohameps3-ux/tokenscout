@@ -3,8 +3,7 @@ import { fetchNewPools, fetchTrendingPools, parseGeckoPool } from "@/lib/api/gec
 import { searchNewPairs } from "@/lib/api/dexscreener";
 import { scoreToken, TokenData } from "@/lib/scoring/scorer";
 import { broadcastHighScoreAlerts, isTelegramConfigured } from "@/lib/telegram";
-
-type Chain = "BASE" | "SOLANA";
+import type { Chain } from "@/lib/chains";
 
 export async function scanChain(chain: Chain): Promise<{ added: number; updated: number }> {
   const start = Date.now();

@@ -8,6 +8,7 @@ import { UpgradePrompt } from "@/components/monetization/UpgradePrompt";
 import { prisma } from "@/lib/prisma";
 import { SESSION_COOKIE } from "@/lib/session";
 import { PLANS } from "@/lib/stripe";
+import { normalizeChain } from "@/lib/chains";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Zap, TrendingUp, Shield, Clock } from "lucide-react";
 import Link from "next/link";
@@ -28,10 +29,8 @@ const FREE_PAGE_SIZE   = FREE_TOKEN_LIMIT;    // 10 per page for free
 const PRO_PAGE_SIZE    = 20;
 
 async function getStats() {
-  const [total, baseCount, solanaCount, avgResult, topLiq, lastJob] = await Promise.all([
+  const [total, avgResult, topLiq, lastJob] = await Promise.all([
     prisma.token.count(),
-    prisma.token.count({ where: { chain: "BASE" } }),
-    prisma.token.count({ where: { chain: "SOLANA" } }),
     prisma.token.aggregate({ _avg: { totalScore: true } }),
     prisma.token.findFirst({ orderBy: { liquidity: "desc" }, select: { liquidity: true } }),
     prisma.jobLog.findFirst({
@@ -42,8 +41,6 @@ async function getStats() {
   ]);
   return {
     totalTokens: total,
-    baseTokens: baseCount,
-    solanaTokens: solanaCount,
     avgScore: Math.round(avgResult._avg.totalScore ?? 0),
     topLiquidity: topLiq?.liquidity ?? 0,
     lastUpdated: lastJob?.createdAt?.toISOString() ?? new Date().toISOString(),
@@ -78,8 +75,9 @@ async function getTokens(
   else if (age === "24h") createdAfter = new Date(Date.now() - 24 * 60 * 60 * 1000);
   else if (age === "7d") createdAfter = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
+  const normalizedChain = chain && chain !== "ALL" ? normalizeChain(chain) : null;
   const where = {
-    ...(chain && chain !== "ALL" ? { chain: chain as "BASE" | "SOLANA" } : {}),
+    ...(normalizedChain ? { chain: normalizedChain } : {}),
     ...(minScore > 0 ? { totalScore: { gte: minScore } } : {}),
     ...(minLiquidity > 0 ? { liquidity: { gte: minLiquidity } } : {}),
     ...(createdAfter ? { createdAt: { gte: createdAfter } } : {}),
@@ -180,8 +178,6 @@ export default async function HomePage({ searchParams }: PageProps) {
         {stats && (
           <StatsBar
             totalTokens={stats.totalTokens}
-            baseTokens={stats.baseTokens}
-            solanaTokens={stats.solanaTokens}
             avgScore={stats.avgScore}
             topLiquidity={stats.topLiquidity}
             lastUpdated={stats.lastUpdated}

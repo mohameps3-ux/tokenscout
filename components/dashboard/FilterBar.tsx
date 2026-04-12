@@ -4,9 +4,9 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useCallback, useTransition } from "react";
 import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { SlidersHorizontal, RefreshCw, Lock } from "lucide-react";
 import Link from "next/link";
+import { CHAINS, CHAIN_CONFIG } from "@/lib/chains";
 
 export function FilterBar({ tier = "FREE" }: { tier?: "FREE" | "PRO" }) {
   const isPro = tier === "PRO";
@@ -44,21 +44,44 @@ export function FilterBar({ tier = "FREE" }: { tier?: "FREE" | "PRO" }) {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="space-y-3">
+      {/* Network pills */}
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          onClick={() => updateParam("chain", "ALL")}
+          className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+            chain === "ALL"
+              ? "bg-zinc-200 text-zinc-900 border-zinc-200"
+              : "bg-transparent text-zinc-400 border-zinc-700 hover:border-zinc-500 hover:text-white"
+          }`}
+        >
+          All
+        </button>
+        {CHAINS.map((c) => {
+          const cfg = CHAIN_CONFIG[c];
+          const active = chain === c;
+          return (
+            <button
+              key={c}
+              onClick={() => updateParam("chain", c)}
+              className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+                active
+                  ? `${cfg.color} border-current bg-current/10`
+                  : "bg-transparent text-zinc-400 border-zinc-700 hover:border-zinc-500 hover:text-white"
+              }`}
+            >
+              {cfg.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Other filters row */}
+      <div className="flex flex-wrap items-center gap-3">
       <div className="flex items-center gap-1.5 text-zinc-400">
         <SlidersHorizontal className="w-4 h-4" />
         <span className="text-sm font-medium">Filters</span>
       </div>
-
-      <Select
-        value={chain}
-        onChange={(e) => updateParam("chain", e.target.value)}
-        aria-label="Filter by chain"
-      >
-        <option value="ALL">All Chains</option>
-        <option value="BASE">Base</option>
-        <option value="SOLANA">Solana</option>
-      </Select>
 
       <Select
         value={minScore}
@@ -126,6 +149,7 @@ export function FilterBar({ tier = "FREE" }: { tier?: "FREE" | "PRO" }) {
           <span>Top 10 only — Upgrade for all tokens</span>
         </Link>
       )}
+      </div>
     </div>
   );
 }

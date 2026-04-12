@@ -47,10 +47,7 @@ async function getDashboardData() {
       }),
       prisma.token.count({ where: { isHoneypot: true } }),
       prisma.jobLog.findMany({ orderBy: { createdAt: "desc" }, take: 8 }),
-      Promise.all([
-        prisma.token.count({ where: { chain: "BASE" } }),
-        prisma.token.count({ where: { chain: "SOLANA" } }),
-      ]),
+      prisma.token.groupBy({ by: ["chain"], _count: { _all: true } }),
       Promise.all([
         prisma.token.count({ where: { totalScore: { gte: 75 } } }),
         prisma.token.count({ where: { totalScore: { gte: 50, lt: 75 } } }),
@@ -59,10 +56,10 @@ async function getDashboardData() {
       ]),
     ]);
 
+  const chainCounts = Object.fromEntries(chainBreakdown.map((r) => [r.chain, r._count._all]));
   return {
     topTokens, recentTokens, honeypotCount, jobLogs,
-    baseCount: chainBreakdown[0],
-    solanaCount: chainBreakdown[1],
+    chainCounts,
     strongCount: scoreDistribution[0],
     decentCount: scoreDistribution[1],
     weakCount: scoreDistribution[2],
@@ -120,8 +117,9 @@ export default async function DashboardPage({ searchParams }: PageProps) {
             <>
               <StatTile label="Strong Tokens" value={formatNumber(scannerData.strongCount)} color="text-emerald-400" />
               <StatTile label="Honeypots" value={formatNumber(scannerData.honeypotCount)} color="text-red-400" />
-              <StatTile label="Base" value={formatNumber(scannerData.baseCount)} color="text-blue-400" />
-              <StatTile label="Solana" value={formatNumber(scannerData.solanaCount)} color="text-purple-400" />
+              {Object.entries(scannerData.chainCounts).map(([chain, count]) => (
+                <StatTile key={chain} label={chain} value={formatNumber(count as number)} color="text-blue-400" />
+              ))}
             </>
           )}
           {predStats && (
@@ -200,8 +198,10 @@ function ScannerTab({ data }: { data: Awaited<ReturnType<typeof getDashboardData
             <CardHeader><CardTitle className="text-sm">Chain Distribution</CardTitle></CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <ChainBar label="Base" count={data.baseCount} total={data.baseCount + data.solanaCount} color="bg-blue-500" />
-                <ChainBar label="Solana" count={data.solanaCount} total={data.baseCount + data.solanaCount} color="bg-purple-500" />
+                {Object.entries(data.chainCounts).map(([chain, count]) => {
+                  const total = Object.values(data.chainCounts).reduce((s, n) => s + (n as number), 0);
+                  return <ChainBar key={chain} label={chain} count={count as number} total={total} color="bg-blue-500" />;
+                })}
               </div>
             </CardContent>
           </Card>

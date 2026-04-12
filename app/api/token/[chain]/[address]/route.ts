@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { CHAIN_CONFIG, normalizeChain } from "@/lib/chains";
 
 export const dynamic = "force-dynamic";
 
@@ -54,14 +55,15 @@ interface GeckoOHLCV {
   };
 }
 
-function normChain(chain: string): string {
-  return chain.toUpperCase() === "SOLANA" ? "solana" : "base";
+function normChain(chain: string): { dexId: string; geckoId: string } {
+  const cfg = CHAIN_CONFIG[normalizeChain(chain) ?? "BASE"];
+  return { dexId: cfg.dexId, geckoId: cfg.geckoId ?? cfg.dexId };
 }
 
 async function fetchDexScreener(address: string, chain: string): Promise<DexScreenerTokenResponse> {
-  const chainSlug = normChain(chain);
+  const { dexId } = normChain(chain);
   const res = await fetch(
-    `https://api.dexscreener.com/tokens/v1/${chainSlug}/${address}`,
+    `https://api.dexscreener.com/tokens/v1/${dexId}/${address}`,
     { next: { revalidate: 60 } }
   );
   if (!res.ok) return { schemaVersion: "1", pairs: null };
@@ -72,10 +74,10 @@ async function fetchDexScreener(address: string, chain: string): Promise<DexScre
 }
 
 async function fetchGeckoTerminalPools(address: string, chain: string) {
-  const network = normChain(chain);
+  const { geckoId } = normChain(chain);
   try {
     const res = await fetch(
-      `https://api.geckoterminal.com/api/v2/networks/${network}/tokens/${address}/pools?page=1`,
+      `https://api.geckoterminal.com/api/v2/networks/${geckoId}/tokens/${address}/pools?page=1`,
       {
         headers: { "Accept": "application/json;version=20230302" },
         next: { revalidate: 120 },
@@ -89,10 +91,10 @@ async function fetchGeckoTerminalPools(address: string, chain: string) {
 }
 
 async function fetchGeckoTerminalInfo(address: string, chain: string) {
-  const network = normChain(chain);
+  const { geckoId } = normChain(chain);
   try {
     const res = await fetch(
-      `https://api.geckoterminal.com/api/v2/networks/${network}/tokens/${address}/info`,
+      `https://api.geckoterminal.com/api/v2/networks/${geckoId}/tokens/${address}/info`,
       {
         headers: { "Accept": "application/json;version=20230302" },
         next: { revalidate: 300 },
@@ -106,7 +108,7 @@ async function fetchGeckoTerminalInfo(address: string, chain: string) {
 }
 
 async function fetchOHLCV(poolAddress: string, chain: string, timeframe: string) {
-  const network = normChain(chain);
+  const { geckoId: network } = normChain(chain);
   const resolution = timeframe === "1h" ? "hour" : timeframe === "4h" ? "hour" : "day";
   const limit = timeframe === "4h" ? 96 : 168;
   const aggregate = timeframe === "4h" ? 4 : 1;
@@ -132,7 +134,7 @@ export async function GET(
   const url = new URL(_request.url);
   const timeframe = url.searchParams.get("timeframe") ?? "1h";
 
-  const chainUpper = chain.toUpperCase() as "BASE" | "SOLANA";
+  const chainUpper = (normalizeChain(chain) ?? chain.toUpperCase()) as string;
 
   const [dexData, geckoInfo, dbToken] = await Promise.all([
     fetchDexScreener(address, chain),

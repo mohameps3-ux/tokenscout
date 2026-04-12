@@ -1,8 +1,9 @@
 import { estimateHolderScore } from "@/lib/api/holders";
+import type { Chain } from "@/lib/chains";
 
 export interface TokenData {
   address: string;
-  chain: "BASE" | "SOLANA";
+  chain: Chain;
   name: string;
   symbol: string;
   pairAddress?: string;

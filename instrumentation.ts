@@ -17,12 +17,11 @@ export async function register() {
   async function runScan() {
     try {
       const { scanChain } = await import("@/lib/jobs/scanner");
+      const { CHAINS } = await import("@/lib/chains");
       console.log("[Instrumentation] Running token scan...");
-      const [base, sol] = await Promise.all([
-        scanChain("BASE"),
-        scanChain("SOLANA"),
-      ]);
-      console.log(`[Instrumentation] Scan done — BASE: +${base.added} / SOL: +${sol.added}`);
+      const results = await Promise.all(CHAINS.map((c) => scanChain(c)));
+      const summary = CHAINS.map((c, i) => `${c}: +${results[i].added}`).join(" / ");
+      console.log(`[Instrumentation] Scan done — ${summary}`);
     } catch (err) {
       console.error("[Instrumentation] Scan failed:", err);
     }

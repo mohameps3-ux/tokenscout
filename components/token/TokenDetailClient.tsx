@@ -7,6 +7,7 @@ import { ScoreBar, ScoreBreakdown } from "@/components/dashboard/ScoreBar";
 import { Badge } from "@/components/ui/badge";
 import { formatUsd, formatPercent, formatAge, formatNumber } from "@/lib/utils";
 import { getScoreLabel } from "@/lib/scoring/scorer";
+import { CHAIN_CONFIG, normalizeChain } from "@/lib/chains";
 import {
   TrendingUp, TrendingDown, Globe, Send, ExternalLink,
   AlertTriangle, Shield, Zap,
@@ -69,21 +70,6 @@ const TIMEFRAMES = [
   { label: "1D", value: "1d" },
 ];
 
-const EXPLORER: Record<string, { name: string; url: (a: string) => string }> = {
-  BASE:   { name: "Basescan",  url: (a) => `https://basescan.org/token/${a}` },
-  SOLANA: { name: "Solscan",   url: (a) => `https://solscan.io/token/${a}` },
-};
-
-function tradeLinks(chain: string, address: string, pairAddress: string | null) {
-  if (chain === "SOLANA") return [
-    { label: "Jupiter",  url: `https://jup.ag/swap/SOL-${address}`,              color: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10" },
-    { label: "Raydium",  url: `https://raydium.io/swap/?outputCurrency=${address}`, color: "text-purple-400 border-purple-500/30 bg-purple-500/10" },
-  ];
-  return [
-    { label: "Uniswap",  url: pairAddress ? `https://app.uniswap.org/explore/pools/base/${pairAddress}` : `https://app.uniswap.org/swap?outputCurrency=${address}&chain=base`, color: "text-pink-400 border-pink-500/30 bg-pink-500/10" },
-    { label: "Aerodrome", url: `https://aerodrome.finance/swap?from=eth&to=${address}`, color: "text-blue-400 border-blue-500/30 bg-blue-500/10" },
-  ];
-}
 
 function StatCell({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
@@ -109,8 +95,9 @@ export function TokenDetailClient({ data, currentTimeframe }: TokenDetailClientP
   const change24h = priceChange?.h24 ?? null;
   const priceUp   = (change24h ?? 0) >= 0;
   const scoreLabel = score ? getScoreLabel(score.total) : null;
-  const explorer   = EXPLORER[chain] ?? EXPLORER.BASE;
-  const trades     = tradeLinks(chain, address, pairAddress);
+  const chainCfg   = CHAIN_CONFIG[normalizeChain(chain) ?? "BASE"];
+  const explorer   = { name: chainCfg.explorerName, url: chainCfg.explorerUrl };
+  const trades     = chainCfg.tradeLinks(address, pairAddress);
   const listedDate = listedAt ? new Date(listedAt) : pairCreatedAt ? new Date(pairCreatedAt) : null;
 
   const setTimeframe = (tf: string) => {

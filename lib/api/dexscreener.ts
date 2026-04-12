@@ -1,4 +1,5 @@
 import axios from "axios";
+import { type Chain, CHAIN_CONFIG } from "@/lib/chains";
 
 const BASE_URL = "https://api.dexscreener.com";
 
@@ -34,30 +35,14 @@ export interface DexScreenerResponse {
   pairs: DexScreenerPair[] | null;
 }
 
-const CHAIN_MAP: Record<string, string[]> = {
-  BASE: ["base"],
-  SOLANA: ["solana"],
-};
-
-export async function fetchLatestTokens(chain: "BASE" | "SOLANA"): Promise<DexScreenerPair[]> {
+export async function fetchLatestTokens(chain: Chain): Promise<DexScreenerPair[]> {
+  const dexId = CHAIN_CONFIG[chain].dexId;
   try {
-    const chainIds = CHAIN_MAP[chain];
-    const results: DexScreenerPair[] = [];
-
-    for (const chainId of chainIds) {
-      // Fetch latest pairs for chain via token search
-      const response = await axios.get<DexScreenerResponse>(
-        `${BASE_URL}/latest/dex/pairs/${chainId}`,
-        { timeout: 10000 }
-      );
-
-      const pairs = response.data?.pairs;
-      if (pairs && Array.isArray(pairs)) {
-        results.push(...pairs);
-      }
-    }
-
-    return results;
+    const response = await axios.get<DexScreenerResponse>(
+      `${BASE_URL}/latest/dex/pairs/${dexId}`,
+      { timeout: 10000 }
+    );
+    return response.data?.pairs ?? [];
   } catch (error) {
     console.error(`[DexScreener] Failed to fetch tokens for ${chain}:`, error);
     return [];
@@ -66,50 +51,41 @@ export async function fetchLatestTokens(chain: "BASE" | "SOLANA"): Promise<DexSc
 
 export async function fetchTokenByAddress(
   address: string,
-  chain: "BASE" | "SOLANA"
+  chain: Chain
 ): Promise<DexScreenerPair | null> {
+  const dexId = CHAIN_CONFIG[chain].dexId;
   try {
-    const chainId = chain === "BASE" ? "base" : "solana";
     const response = await axios.get<DexScreenerResponse>(
       `${BASE_URL}/latest/dex/tokens/${address}`,
       { timeout: 10000 }
     );
-
     const pairs = response.data?.pairs;
     if (!pairs || !Array.isArray(pairs)) return null;
-
-    return pairs.find((p) => p.chainId === chainId) ?? pairs[0] ?? null;
+    return pairs.find((p) => p.chainId === dexId) ?? pairs[0] ?? null;
   } catch (error) {
     console.error(`[DexScreener] Failed to fetch token ${address}:`, error);
     return null;
   }
 }
 
-export async function searchNewPairs(chain: "BASE" | "SOLANA"): Promise<DexScreenerPair[]> {
+export async function searchNewPairs(chain: Chain): Promise<DexScreenerPair[]> {
+  const dexId = CHAIN_CONFIG[chain].dexId;
   try {
-    // Get recently created pairs by querying latest tokens
-    const chainId = chain === "BASE" ? "base" : "solana";
     const response = await axios.get(
       `${BASE_URL}/token-profiles/latest/v1`,
       { timeout: 10000 }
     );
-
-    // Filter by chain and return latest
     const data = Array.isArray(response.data) ? response.data : [];
-    const filtered = data.filter((item: any) => item.chainId === chainId);
+    const filtered = data.filter((item: { chainId?: string }) => item.chainId === dexId);
+    if (filtered.length === 0) return fetchLatestTokens(chain);
 
-    if (filtered.length === 0) return [];
-
-    // Fetch pair data for these tokens
-    const addresses = filtered.slice(0, 20).map((item: any) => item.tokenAddress).join(",");
+    const addresses = filtered.slice(0, 20).map((item: { tokenAddress: string }) => item.tokenAddress).join(",");
     const pairResponse = await axios.get<DexScreenerResponse>(
       `${BASE_URL}/latest/dex/tokens/${addresses}`,
       { timeout: 10000 }
     );
-
     return pairResponse.data?.pairs ?? [];
   } catch {
-    // Fallback: fetch latest pairs directly
     return fetchLatestTokens(chain);
   }
 }
