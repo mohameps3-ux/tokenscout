@@ -13,7 +13,7 @@ RUN npm ci
 COPY . .
 
 # Use --no-turbopack to avoid Edge Runtime compilation issues with Prisma/node:path
-RUN npx prisma generate && npx next build --no-turbopack
+RUN npx prisma generate && npm run build
 
 EXPOSE 3000
 ENV PORT=3000
