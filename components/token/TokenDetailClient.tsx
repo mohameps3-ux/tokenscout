@@ -40,7 +40,7 @@ interface TokenData {
   symbol: string | null;
   imageUrl: string | null;
   priceUsd: number | null;
-  priceChange: { h1: number; h6: number; h24: number } | null;
+  priceChange: { h1: number; h6: number; h24: number; d7?: number } | null;
   marketCap: number | null;
   fdv: number | null;
   totalSupply: number | null;
@@ -56,6 +56,8 @@ interface TokenData {
   pairCreatedAt: number | null;
   listedAt: string | null;
   ohlcv: [number, number, number, number, number, number][] | null;
+  high24h: number | null;
+  low24h: number | null;
   score: Score | null;
 }
 
@@ -68,6 +70,7 @@ const TIMEFRAMES = [
   { label: "1H", value: "1h" },
   { label: "4H", value: "4h" },
   { label: "1D", value: "1d" },
+  { label: "1W", value: "1w" },
 ];
 
 
@@ -89,7 +92,7 @@ export function TokenDetailClient({ data, currentTimeframe }: TokenDetailClientP
     address, chain, name, symbol, priceUsd, priceChange,
     marketCap, fdv, totalSupply, volume24h, txns24h, liquidity,
     pairAddress, pools, website, twitter, telegram, description,
-    pairCreatedAt, listedAt, ohlcv, score, imageUrl,
+    pairCreatedAt, listedAt, ohlcv, high24h, low24h, score, imageUrl,
   } = data;
 
   const change24h = priceChange?.h24 ?? null;
@@ -171,16 +174,29 @@ export function TokenDetailClient({ data, currentTimeframe }: TokenDetailClientP
           <div className="flex items-center justify-between">
             <span className="text-sm text-zinc-400 font-medium">{symbol ?? ""}/USD</span>
             <div className="flex gap-1">
-              {TIMEFRAMES.map(({ label, value }) => (
-                <button key={value} onClick={() => setTimeframe(value)}
-                  className={`px-2.5 py-1 text-xs rounded font-medium transition-colors ${
-                    currentTimeframe === value
-                      ? "bg-blue-600 text-white"
-                      : "text-zinc-400 bg-zinc-800 hover:bg-zinc-700 hover:text-white"
-                  }`}>
-                  {label}
-                </button>
-              ))}
+              {TIMEFRAMES.map(({ label, value }) => {
+                const pct =
+                  value === "1h" ? priceChange?.h1 :
+                  value === "4h" ? priceChange?.h6 :
+                  value === "1d" ? priceChange?.h24 :
+                  priceChange?.d7;
+                const pctColor = pct == null ? "" : pct >= 0 ? "text-emerald-400" : "text-red-400";
+                return (
+                  <button key={value} onClick={() => setTimeframe(value)}
+                    className={`px-2.5 py-1 text-xs rounded font-medium transition-colors ${
+                      currentTimeframe === value
+                        ? "bg-blue-600 text-white"
+                        : "text-zinc-400 bg-zinc-800 hover:bg-zinc-700 hover:text-white"
+                    }`}>
+                    <span>{label}</span>
+                    {pct != null && (
+                      <span className={`ml-1 ${currentTimeframe === value ? "text-white/80" : pctColor}`}>
+                        {pct >= 0 ? "+" : ""}{pct.toFixed(1)}%
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -191,6 +207,65 @@ export function TokenDetailClient({ data, currentTimeframe }: TokenDetailClientP
               No chart data available
             </div>
           )}
+
+          {/* Below-chart stats */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1 border-t border-zinc-800/60">
+            {/* 24h High/Low */}
+            <div>
+              <p className="text-xs text-zinc-500 mb-1">24h High</p>
+              <p className="text-sm font-semibold text-emerald-400 font-mono">
+                {high24h != null ? formatUsd(high24h) : "—"}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-zinc-500 mb-1">24h Low</p>
+              <p className="text-sm font-semibold text-red-400 font-mono">
+                {low24h != null ? formatUsd(low24h) : "—"}
+              </p>
+            </div>
+
+            {/* Price changes */}
+            <div>
+              <p className="text-xs text-zinc-500 mb-1">Price Change</p>
+              <div className="flex flex-wrap gap-x-3 gap-y-1">
+                {[
+                  { label: "1h", val: priceChange?.h1 },
+                  { label: "6h", val: priceChange?.h6 },
+                  { label: "24h", val: priceChange?.h24 },
+                  { label: "7d",  val: priceChange?.d7 },
+                ].map(({ label, val }) =>
+                  val != null ? (
+                    <span key={label} className="text-xs">
+                      <span className="text-zinc-600">{label} </span>
+                      <span className={val >= 0 ? "text-emerald-400" : "text-red-400"}>
+                        {val >= 0 ? "+" : ""}{val.toFixed(2)}%
+                      </span>
+                    </span>
+                  ) : null
+                )}
+              </div>
+            </div>
+
+            {/* Buy/Sell pressure */}
+            {txns24h && txns24h.buys + txns24h.sells > 0 && (() => {
+              const total = txns24h.buys + txns24h.sells;
+              const buyPct = Math.round((txns24h.buys / total) * 100);
+              const sellPct = 100 - buyPct;
+              return (
+                <div>
+                  <p className="text-xs text-zinc-500 mb-1">Buy / Sell Pressure</p>
+                  <div className="flex h-2 rounded-full overflow-hidden bg-zinc-800 mb-1">
+                    <div className="bg-emerald-500 transition-all" style={{ width: `${buyPct}%` }} />
+                    <div className="bg-red-500 transition-all" style={{ width: `${sellPct}%` }} />
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-emerald-400">{buyPct}% buy</span>
+                    <span className="text-red-400">{sellPct}% sell</span>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
         </div>
 
         {/* Stats sidebar */}

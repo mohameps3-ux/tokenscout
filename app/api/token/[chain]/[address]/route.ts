@@ -14,7 +14,7 @@ interface DexScreenerPair {
   priceUsd?: string;
   txns: { h24: { buys: number; sells: number } };
   volume: { h24: number; h6: number; h1: number };
-  priceChange: { h1: number; h6: number; h24: number };
+  priceChange: { h1: number; h6: number; h24: number; d7?: number };
   liquidity?: { usd: number; base: number; quote: number };
   fdv?: number;
   marketCap?: number;
@@ -107,11 +107,16 @@ async function fetchGeckoTerminalInfo(address: string, chain: string) {
   }
 }
 
-async function fetchOHLCV(poolAddress: string, chain: string, timeframe: string) {
+async function fetchOHLCV(poolAddress: string, chain: string, timeframe: string, limitOverride?: number) {
   const { geckoId: network } = normChain(chain);
-  const resolution = timeframe === "1h" ? "hour" : timeframe === "4h" ? "hour" : "day";
-  const limit = timeframe === "4h" ? 96 : 168;
-  const aggregate = timeframe === "4h" ? 4 : 1;
+  let resolution: string, aggregate: number, defaultLimit: number;
+  switch (timeframe) {
+    case "1h": resolution = "hour"; aggregate = 1; defaultLimit = 200; break;
+    case "4h": resolution = "hour"; aggregate = 4; defaultLimit = 200; break;
+    case "1w": resolution = "day";  aggregate = 7; defaultLimit = 52;  break;
+    default:   resolution = "day";  aggregate = 1; defaultLimit = 200; break;
+  }
+  const limit = limitOverride ?? defaultLimit;
   try {
     const url = `https://api.geckoterminal.com/api/v2/networks/${network}/pools/${poolAddress}/ohlcv/${resolution}?aggregate=${aggregate}&limit=${limit}&currency=usd`;
     const res = await fetch(url, {
@@ -162,11 +167,17 @@ export async function GET(
     url: p.url,
   }));
 
-  // OHLCV from GeckoTerminal using top pair address
-  let ohlcv: [number, number, number, number, number, number][] | null = null;
-  if (topPair?.pairAddress) {
-    ohlcv = await fetchOHLCV(topPair.pairAddress, chain, timeframe);
-  }
+  // OHLCV from GeckoTerminal — main candles + separate 1h fetch for 24h H/L
+  const pairAddr = topPair?.pairAddress ?? null;
+  const [ohlcv, hourlyOhlcv] = await Promise.all([
+    pairAddr ? fetchOHLCV(pairAddr, chain, timeframe) : Promise.resolve(null),
+    pairAddr && timeframe !== "1h" ? fetchOHLCV(pairAddr, chain, "1h", 24) : Promise.resolve(null),
+  ]);
+
+  // Compute 24h High/Low
+  const h1Candles = timeframe === "1h" ? (ohlcv?.slice(-24) ?? null) : hourlyOhlcv;
+  const high24h = h1Candles?.length ? Math.max(...h1Candles.map((c) => c[2])) : null;
+  const low24h  = h1Candles?.length ? Math.min(...h1Candles.map((c) => c[3])) : null;
 
   // Info from DexScreener
   const info = topPair?.info ?? null;
@@ -206,6 +217,8 @@ export async function GET(
     pairCreatedAt: topPair?.pairCreatedAt ?? null,
     listedAt: dbToken?.listedAt?.toISOString() ?? null,
     ohlcv,
+    high24h,
+    low24h,
     score: dbToken ? {
       total: dbToken.totalScore,
       liquidity: dbToken.liquidityScore,

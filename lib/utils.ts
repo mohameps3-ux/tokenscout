@@ -13,11 +13,20 @@ export function formatUsd(value: number | null | undefined, compact = false): st
     if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}K`;
     return `$${value.toFixed(2)}`;
   }
+  let maximumFractionDigits = 2;
+  if (value > 0 && value < 1) {
+    if (value < 0.01) {
+      const leadingZeros = Math.max(0, Math.floor(-Math.log10(value)));
+      maximumFractionDigits = Math.min(leadingZeros + 4, 20);
+    } else {
+      maximumFractionDigits = 4;
+    }
+  }
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 2,
-    maximumFractionDigits: value < 0.01 ? 8 : 2,
+    maximumFractionDigits,
   }).format(value);
 }
 
