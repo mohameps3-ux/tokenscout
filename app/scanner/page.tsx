@@ -49,9 +49,12 @@ async function getUserTier(sessionId: string | undefined): Promise<"FREE" | "PRO
   if (!sessionId) return "FREE";
   const user = await prisma.user.findUnique({
     where: { id: sessionId },
-    select: { tier: true },
+    select: { tier: true, proExpiresAt: true },
   });
-  return (user?.tier as "FREE" | "PRO") ?? "FREE";
+  if (!user) return "FREE";
+  if (user.tier === "PRO") return "PRO";
+  if (user.proExpiresAt && user.proExpiresAt > new Date()) return "PRO";
+  return "FREE";
 }
 
 async function getTokens(params: Awaited<PageProps["searchParams"]>, tier: "FREE" | "PRO") {

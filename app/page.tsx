@@ -7,7 +7,7 @@ import { CoinTable } from "@/components/market/CoinTable";
 async function getMarketData() {
   const base = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   try {
-    const res = await fetch(`${base}/api/market`, { next: { revalidate: 30 } });
+    const res = await fetch(`${base}/api/market`, { next: { revalidate: 60 } });
     if (!res.ok) return null;
     return await res.json();
   } catch {
@@ -44,7 +44,7 @@ export default async function HomePage() {
             Crypto <span className="text-blue-400">Market</span> Overview
           </h1>
           <p className="mt-2 text-zinc-400 text-sm sm:text-base max-w-xl mx-auto">
-            Live prices, market cap rankings, and trend data — updated every 30 seconds.
+            Live prices, market cap rankings, and trend data — updated every 60 seconds.
           </p>
         </div>
 

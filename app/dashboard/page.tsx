@@ -14,8 +14,10 @@ import { getScoreLabel } from "@/lib/scoring/scorer";
 import { getCurrentWeekStart } from "@/lib/elo";
 import { cookies } from "next/headers";
 import { SESSION_COOKIE } from "@/lib/session";
-import { TrendingUp, TrendingDown, AlertTriangle, BarChart3, Activity, Trophy, Target, Bot } from "lucide-react";
+import { TrendingUp, TrendingDown, AlertTriangle, BarChart3, Activity, Trophy, Target, Bot, Gift } from "lucide-react";
 import Link from "next/link";
+import { ReferralCard } from "@/components/referral/ReferralCard";
+import { ReferralLeaderboard } from "@/components/referral/ReferralLeaderboard";
 
 interface PageProps {
   searchParams: Promise<{ tab?: string }>;
@@ -85,7 +87,7 @@ async function getPredictionStats() {
 
 export default async function DashboardPage({ searchParams }: PageProps) {
   const { tab: tabParam } = await searchParams;
-  const tab = tabParam === "predictions" ? "predictions" : "scanner";
+  const tab = tabParam === "predictions" ? "predictions" : tabParam === "referral" ? "referral" : "scanner";
 
   const cookieStore = await cookies();
   const sessionId = cookieStore.get(SESSION_COOKIE)?.value;
@@ -136,8 +138,10 @@ export default async function DashboardPage({ searchParams }: PageProps) {
           <DashboardTabs activeTab={tab}>
             {tab === "scanner" ? (
               <ScannerTab data={scannerData} />
-            ) : (
+            ) : tab === "predictions" ? (
               <PredictionsTab sessionId={sessionId} />
+            ) : (
+              <ReferralTab />
             )}
           </DashboardTabs>
         </Suspense>
@@ -150,6 +154,57 @@ export default async function DashboardPage({ searchParams }: PageProps) {
           </p>
         </footer>
       </main>
+    </div>
+  );
+}
+
+// ─── Referral Tab ────────────────────────────────────────────────────────────
+
+function ReferralTab() {
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="rounded-xl border border-blue-500/20 bg-gradient-to-r from-blue-600/10 to-violet-600/10 p-5 flex items-center gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-600/20 border border-blue-500/30">
+          <Gift className="w-6 h-6 text-blue-400" />
+        </div>
+        <div>
+          <h2 className="text-lg font-bold text-white">Referral Program</h2>
+          <p className="text-sm text-zinc-400">Invite friends and earn points for free Pro access. No crypto needed.</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        {/* Referral card — wider */}
+        <div className="lg:col-span-3">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <Gift className="w-4 h-4 text-blue-400" />
+                Your Referral
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ReferralCard />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Leaderboard */}
+        <div className="lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <Trophy className="w-4 h-4 text-yellow-400" />
+                Top Referrers
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ReferralLeaderboard />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }

@@ -3,11 +3,12 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import { cn } from "@/lib/utils";
-import { BarChart3, Target } from "lucide-react";
+import { BarChart3, Target, Gift } from "lucide-react";
 
 const TABS = [
-  { id: "scanner", label: "Scanner", icon: BarChart3 },
-  { id: "predictions", label: "Predictions", icon: Target },
+  { id: "scanner",     label: "Scanner",     icon: BarChart3 },
+  { id: "predictions", label: "Predictions", icon: Target    },
+  { id: "referral",    label: "Referral",    icon: Gift      },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];

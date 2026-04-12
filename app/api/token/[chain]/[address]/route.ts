@@ -193,6 +193,28 @@ export async function GET(
   const gtWebsite = geckoAttrs?.websites?.[0] ?? null;
   const gtTwitter = geckoAttrs?.twitter_handle ? `https://twitter.com/${geckoAttrs.twitter_handle}` : null;
   const gtTelegram = geckoAttrs?.telegram_handle ? `https://t.me/${geckoAttrs.telegram_handle}` : null;
+  const discord = info?.socials?.find((s) => s.type === "discord")?.url
+    ?? (geckoAttrs?.discord_url ?? null);
+
+  // Similar tokens from DB (same chain, similar market cap ±10×)
+  const mcap = topPair?.marketCap ?? null;
+  const similarTokens = mcap && mcap > 0
+    ? await prisma.token.findMany({
+        where: {
+          chain: chain.toUpperCase(),
+          address: { not: address },
+          marketCap: { gte: mcap * 0.1, lte: mcap * 10 },
+          totalScore: { gt: 0 },
+        },
+        orderBy: { totalScore: "desc" },
+        take: 5,
+        select: {
+          address: true, name: true, symbol: true,
+          priceUsd: true, marketCap: true, totalScore: true,
+          priceChange24h: true, chain: true,
+        },
+      })
+    : [];
 
   return Response.json({
     address,
@@ -213,7 +235,9 @@ export async function GET(
     website: website ?? gtWebsite ?? null,
     twitter: twitter ?? gtTwitter ?? null,
     telegram: telegram ?? gtTelegram ?? null,
+    discord,
     description,
+    similarTokens,
     pairCreatedAt: topPair?.pairCreatedAt ?? null,
     listedAt: dbToken?.listedAt?.toISOString() ?? null,
     ohlcv,

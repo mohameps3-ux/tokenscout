@@ -90,7 +90,7 @@ export function CoinTable({ initialCoins }: CoinTableProps) {
         }
       } catch {}
     };
-    const id = setInterval(tick, 30_000);
+    const id = setInterval(tick, 60_000);
     return () => clearInterval(id);
   }, [applyFlash]);
 
@@ -132,11 +132,24 @@ export function CoinTable({ initialCoins }: CoinTableProps) {
     </th>
   );
 
+  // Smart pagination: show at most 7 page buttons with ellipsis
+  const pageButtons = (): (number | "…")[] => {
+    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
+    const pages: (number | "…")[] = [1];
+    if (page > 3) pages.push("…");
+    for (let p = Math.max(2, page - 1); p <= Math.min(totalPages - 1, page + 1); p++) {
+      pages.push(p);
+    }
+    if (page < totalPages - 2) pages.push("…");
+    pages.push(totalPages);
+    return pages;
+  };
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-white">Top 100 Cryptocurrencies by Market Cap</h2>
-        <span className="text-xs text-zinc-600">Updates every 30s</span>
+        <h2 className="text-sm font-semibold text-white">Top {sorted.length} Cryptocurrencies by Market Cap</h2>
+        <span className="text-xs text-zinc-600">Updates every 60s</span>
       </div>
 
       <div className="rounded-xl border border-zinc-800 overflow-hidden">
@@ -203,18 +216,36 @@ export function CoinTable({ initialCoins }: CoinTableProps) {
       {/* Pagination */}
       <div className="flex items-center justify-between text-xs text-zinc-500">
         <span>Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, sorted.length)} of {sorted.length}</span>
-        <div className="flex gap-1">
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-            <button
-              key={p}
-              onClick={() => setPage(p)}
-              className={`w-7 h-7 rounded text-xs transition-colors ${
-                p === page ? "bg-blue-600 text-white" : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white"
-              }`}
-            >
-              {p}
-            </button>
-          ))}
+        <div className="flex gap-1 items-center">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="px-2 h-7 rounded text-xs bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            ‹
+          </button>
+          {pageButtons().map((p, i) =>
+            p === "…" ? (
+              <span key={`e${i}`} className="w-7 text-center text-zinc-600">…</span>
+            ) : (
+              <button
+                key={p}
+                onClick={() => setPage(p)}
+                className={`w-7 h-7 rounded text-xs transition-colors ${
+                  p === page ? "bg-blue-600 text-white" : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white"
+                }`}
+              >
+                {p}
+              </button>
+            )
+          )}
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            className="px-2 h-7 rounded text-xs bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            ›
+          </button>
         </div>
       </div>
     </div>

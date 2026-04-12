@@ -15,16 +15,20 @@ datasource db {
 // BadgeType values: "ALPHA_CALLER" | "WEEK_WINNER" | "STREAK_5" | "STREAK_10" | "FIRST_PREDICTION"
 
 model User {
-  id                 String   @id @default(cuid())
-  walletAddress      String?  @unique
-  username           String?  @unique
-  eloScore           Int      @default(1000)
-  totalPredictions   Int      @default(0)
-  correctPredictions Int      @default(0)
-  tier               String   @default("FREE")
+  id                 String    @id @default(cuid())
+  walletAddress      String?   @unique
+  username           String?   @unique
+  eloScore           Int       @default(1000)
+  totalPredictions   Int       @default(0)
+  correctPredictions Int       @default(0)
+  tier               String    @default("FREE")
   stripeCustomerId   String?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  referralCode       String?   @unique
+  points             Int       @default(0)
+  referredBy         String?
+  proExpiresAt       DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   predictions        Prediction[]
   leaderboardEntries LeaderboardEntry[]
@@ -32,6 +36,8 @@ model User {
 
   @@index([eloScore])
   @@index([walletAddress])
+  @@index([referredBy])
+  @@index([points])
 }
 
 model Token {
