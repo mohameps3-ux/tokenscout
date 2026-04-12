@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Activity, Zap } from "lucide-react";
+import { SearchBar } from "@/components/SearchBar";
 
 const NAV = [
   { href: "/", label: "Scanner" },
@@ -18,20 +19,25 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/90 backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-14 items-center justify-between">
+        <div className="flex h-14 items-center gap-4">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
+          <Link href="/" className="flex items-center gap-2 group shrink-0">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 group-hover:bg-blue-500 transition-colors">
               <Zap className="h-4 w-4 text-white" />
             </div>
-            <span className="font-bold text-white">
+            <span className="font-bold text-white hidden sm:inline">
               Token<span className="text-blue-400">Scout</span>
               <span className="text-zinc-500 font-normal text-xs ml-1">2.0</span>
             </span>
           </Link>
 
+          {/* Search — grows to fill available space */}
+          <div className="flex-1 max-w-sm">
+            <SearchBar />
+          </div>
+
           {/* Nav */}
-          <nav className="flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-1 shrink-0">
             {NAV.map(({ href, label }) => (
               <Link
                 key={href}
@@ -49,7 +55,7 @@ export function Navbar() {
           </nav>
 
           {/* Live indicator */}
-          <div className="flex items-center gap-2 text-xs text-zinc-500">
+          <div className="hidden sm:flex items-center gap-2 text-xs text-zinc-500 shrink-0">
             <span className="flex items-center gap-1.5">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
