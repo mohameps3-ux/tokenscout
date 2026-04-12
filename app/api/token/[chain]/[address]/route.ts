@@ -1,3 +1,5 @@
+import { prisma } from "@/lib/prisma";
+
 export const dynamic = "force-dynamic";
 
 interface DexScreenerPair {
@@ -130,9 +132,19 @@ export async function GET(
   const url = new URL(_request.url);
   const timeframe = url.searchParams.get("timeframe") ?? "1h";
 
-  const [dexData, geckoInfo] = await Promise.all([
+  const chainUpper = chain.toUpperCase() as "BASE" | "SOLANA";
+
+  const [dexData, geckoInfo, dbToken] = await Promise.all([
     fetchDexScreener(address, chain),
     fetchGeckoTerminalInfo(address, chain),
+    prisma.token.findUnique({
+      where: { address_chain: { address, chain: chainUpper } },
+      select: {
+        totalScore: true, liquidityScore: true, holderScore: true,
+        ageScore: true, volumeScore: true, suspicionScore: true,
+        isHoneypot: true, hasBundledBuys: true, listedAt: true,
+      },
+    }).catch(() => null),
   ]);
 
   const pairs = dexData.pairs ?? [];
@@ -183,12 +195,24 @@ export async function GET(
     volume24h: topPair?.volume?.h24 ?? null,
     txns24h: topPair?.txns?.h24 ?? null,
     liquidity: topPair?.liquidity?.usd ?? null,
+    pairAddress: topPair?.pairAddress ?? null,
     pools,
     website: website ?? gtWebsite ?? null,
     twitter: twitter ?? gtTwitter ?? null,
     telegram: telegram ?? gtTelegram ?? null,
     description,
     pairCreatedAt: topPair?.pairCreatedAt ?? null,
+    listedAt: dbToken?.listedAt?.toISOString() ?? null,
     ohlcv,
+    score: dbToken ? {
+      total: dbToken.totalScore,
+      liquidity: dbToken.liquidityScore,
+      holder: dbToken.holderScore,
+      age: dbToken.ageScore,
+      volume: dbToken.volumeScore,
+      suspicion: dbToken.suspicionScore,
+      isHoneypot: dbToken.isHoneypot,
+      hasBundledBuys: dbToken.hasBundledBuys,
+    } : null,
   });
-    }
+}
