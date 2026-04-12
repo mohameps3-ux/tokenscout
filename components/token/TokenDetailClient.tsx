@@ -3,14 +3,15 @@
 import { useRouter, usePathname } from "next/navigation";
 import { PriceChart } from "@/components/token/PriceChart";
 import { CopyAddress } from "@/components/token/CopyAddress";
+import { AntiRug2Card } from "@/components/token/AntiRug2Card";
 import { ScoreBar, ScoreBreakdown } from "@/components/dashboard/ScoreBar";
 import { Badge } from "@/components/ui/badge";
 import { formatUsd, formatPercent, formatAge, formatNumber } from "@/lib/utils";
-import { getScoreLabel } from "@/lib/scoring/scorer";
+import { getScoreLabel, type RiskLevel } from "@/lib/scoring/scorer";
 import { CHAIN_CONFIG, normalizeChain } from "@/lib/chains";
 import {
   TrendingUp, TrendingDown, Globe, Send, ExternalLink,
-  AlertTriangle, Shield, Zap,
+  AlertTriangle, Shield, Zap, ShieldX,
 } from "lucide-react";
 
 interface Pool {
@@ -29,6 +30,12 @@ interface Score {
   age: number;
   volume: number;
   suspicion: number;
+  contractSafety: number;
+  liquiditySafety: number;
+  teamSafety: number;
+  riskLevel: RiskLevel;
+  insiderBuyCount: number;
+  flags: string[];
   isHoneypot: boolean;
   hasBundledBuys: boolean;
 }
@@ -121,8 +128,14 @@ export function TokenDetailClient({ data, currentTimeframe }: TokenDetailClientP
             <h1 className="text-2xl font-bold text-white">{name ?? "Unknown"}</h1>
             <span className="text-lg text-zinc-500">{symbol ?? "???"}</span>
             <Badge variant={chain === "BASE" ? "default" : "success"}>{chain}</Badge>
-            {score?.isHoneypot   && <Badge variant="danger"><AlertTriangle className="w-3 h-3 mr-1" />Honeypot</Badge>}
+            {score?.riskLevel === "DANGER" && (
+              <Badge variant="danger"><ShieldX className="w-3 h-3 mr-1" />DANGER</Badge>
+            )}
+            {score?.isHoneypot && <Badge variant="danger"><AlertTriangle className="w-3 h-3 mr-1" />Honeypot</Badge>}
             {score?.hasBundledBuys && <Badge variant="warning">Bundled Buys</Badge>}
+            {(score?.insiderBuyCount ?? 0) > 0 && !score?.hasBundledBuys && (
+              <Badge variant="warning">Coordinated Buy</Badge>
+            )}
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
@@ -307,17 +320,26 @@ export function TokenDetailClient({ data, currentTimeframe }: TokenDetailClientP
                 volumeScore={score.volume}
                 suspicionScore={score.suspicion}
               />
-              {score.isHoneypot && (
-                <div className="flex items-center gap-2 text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
-                  <AlertTriangle className="w-3.5 h-3.5 shrink-0" />Honeypot pattern detected
-                </div>
-              )}
               {!score.isHoneypot && score.suspicion >= 8 && (
                 <div className="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-3 py-2">
                   <Shield className="w-3.5 h-3.5 shrink-0" />No suspicious patterns detected
                 </div>
               )}
             </div>
+          )}
+
+          {/* Anti-Rug 2.0 */}
+          {score && (
+            <AntiRug2Card
+              contractSafety={score.contractSafety}
+              liquiditySafety={score.liquiditySafety}
+              teamSafety={score.teamSafety}
+              riskLevel={score.riskLevel}
+              insiderBuyCount={score.insiderBuyCount}
+              isHoneypot={score.isHoneypot}
+              hasBundledBuys={score.hasBundledBuys}
+              flags={score.flags ?? []}
+            />
           )}
         </div>
       </div>

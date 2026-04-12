@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { fetchNewPools, fetchTrendingPools, parseGeckoPool } from "@/lib/api/geckoterminal";
 import { searchNewPairs } from "@/lib/api/dexscreener";
 import { scoreToken, TokenData } from "@/lib/scoring/scorer";
-import { broadcastHighScoreAlerts, isTelegramConfigured } from "@/lib/telegram";
+import { broadcastHighScoreAlerts, checkAlertRulesAndNotify, isTelegramConfigured } from "@/lib/telegram";
 import type { Chain } from "@/lib/chains";
 
 export async function scanChain(chain: Chain): Promise<{ added: number; updated: number }> {
@@ -131,6 +131,14 @@ export async function scanChain(chain: Chain): Promise<{ added: number; updated:
       if (highScoreNew.length > 0) {
         broadcastHighScoreAlerts(highScoreNew).catch((e) =>
           console.error("[Scanner] Telegram broadcast failed:", e)
+        );
+        // Check custom per-user alert rules against all newly added tokens
+        const allNew = await prisma.token.findMany({
+          where: { chain, createdAt: { gte: new Date(start) } },
+          take: 50,
+        });
+        checkAlertRulesAndNotify(allNew).catch((e) =>
+          console.error("[Scanner] Alert rules check failed:", e)
         );
       }
     }

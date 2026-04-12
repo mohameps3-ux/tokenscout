@@ -2,6 +2,7 @@ import { Navbar } from "@/components/Navbar";
 import { TickerBar } from "@/components/market/TickerBar";
 import { MarketStatsBar } from "@/components/market/MarketStatsBar";
 import { TrendingSection } from "@/components/market/TrendingSection";
+import { DexTrendingSection } from "@/components/market/DexTrendingSection";
 import { CoinTable } from "@/components/market/CoinTable";
 
 async function getMarketData() {
@@ -48,8 +49,11 @@ export default async function HomePage() {
           </p>
         </div>
 
-        {/* Trending */}
+        {/* CoinGecko Trending */}
         {trending.length > 0 && <TrendingSection trending={trending} />}
+
+        {/* DexScreener Hot Tokens */}
+        <DexTrendingSection />
 
         {/* Main table */}
         {coins.length > 0 ? (

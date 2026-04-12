@@ -21,13 +21,20 @@ export interface TokenData {
   sells1h?: number;
 }
 
+export type RiskLevel = "SAFE" | "LOW" | "MEDIUM" | "HIGH" | "DANGER";
+
 export interface ScoreBreakdown {
   total: number;
-  liquidity: number;   // 0-25
-  holder: number;      // 0-25
-  age: number;         // 0-20
-  volume: number;      // 0-20
-  suspicion: number;   // 0-10 (10 = clean, 0 = suspicious)
+  liquidity: number;       // 0-25
+  holder: number;          // 0-25
+  age: number;             // 0-20
+  volume: number;          // 0-20
+  suspicion: number;       // 0-10 (10 = clean, 0 = suspicious)
+  contractSafety: number;  // 0-100 (Anti-Rug 2.0)
+  liquiditySafety: number; // 0-100
+  teamSafety: number;      // 0-100
+  riskLevel: RiskLevel;
+  insiderBuyCount: number; // estimated suspicious early wallets
   flags: string[];
   isHoneypot: boolean;
   hasBundledBuys: boolean;
@@ -120,6 +127,62 @@ function scoreSuspicion(data: TokenData): {
   };
 }
 
+// ─── Anti-Rug 2.0 Sub-Scores ─────────────────────────────────────────────────
+
+function scoreContractSafety(data: TokenData, suspicionResult: ReturnType<typeof scoreSuspicion>): number {
+  if (suspicionResult.isHoneypot) return 5;
+  const buys = data.buys24h ?? 0;
+  const sells = data.sells24h ?? 0;
+  const total = buys + sells;
+  if (total > 10 && sells / (buys || 1) < 0.05) return 15;
+  if (total > 5 && sells / (buys || 1) < 0.1) return 45;
+  const change = Math.abs(data.priceChange24h ?? 0);
+  if (change > 1000 && (data.liquidity ?? 0) < 5000) return 35;
+  return 85;
+}
+
+function scoreLiquiditySafety(data: TokenData): number {
+  const liq = data.liquidity ?? 0;
+  if (liq >= 100_000) return 95;
+  if (liq >= 50_000) return 82;
+  if (liq >= 10_000) return 65;
+  if (liq >= 1_000) return 38;
+  return 12;
+}
+
+function scoreTeamSafety(data: TokenData, hasBundledBuys: boolean): { score: number; insiderBuyCount: number } {
+  const buys1h = data.buys1h ?? 0;
+  const buys24h = data.buys24h ?? 0;
+  const earlyConcentration = buys24h > 0 ? buys1h / buys24h : 0;
+
+  let score = 90;
+  let insiderBuyCount = 0;
+
+  if (hasBundledBuys) {
+    score -= 45;
+    insiderBuyCount = Math.max(3, Math.round(buys1h * 0.4));
+  }
+
+  if (earlyConcentration > 0.75 && buys1h > 10) {
+    score -= 25;
+    insiderBuyCount = Math.max(insiderBuyCount, Math.round(buys1h * 0.35));
+    if (insiderBuyCount === 0) insiderBuyCount = Math.round(buys1h * 0.35);
+  } else if (earlyConcentration > 0.6 && buys1h > 5) {
+    score -= 12;
+    insiderBuyCount = Math.max(insiderBuyCount, Math.round(buys1h * 0.2));
+  }
+
+  return { score: Math.max(5, score), insiderBuyCount };
+}
+
+function computeRiskLevel(total: number, isHoneypot: boolean, contractSafety: number): RiskLevel {
+  if (isHoneypot || contractSafety <= 15) return "DANGER";
+  if (total < 25 || contractSafety < 30) return "HIGH";
+  if (total < 45) return "MEDIUM";
+  if (total < 65) return "LOW";
+  return "SAFE";
+}
+
 // ─── Main Scorer ──────────────────────────────────────────────────────────────
 export function scoreToken(data: TokenData): ScoreBreakdown {
   const liquidityScore = scoreLiquidity(data.liquidity);
@@ -130,9 +193,14 @@ export function scoreToken(data: TokenData): ScoreBreakdown {
   );
   const ageScore = scoreAge(data.listedAt);
   const volumeScore = scoreVolumeMcap(data.volume24h, data.marketCap);
-  const { score: suspicionScore, flags, isHoneypot, hasBundledBuys } = scoreSuspicion(data);
+  const suspicionResult = scoreSuspicion(data);
+  const { score: suspicionScore, flags, isHoneypot, hasBundledBuys } = suspicionResult;
 
+  const contractSafety  = scoreContractSafety(data, suspicionResult);
+  const liquiditySafety = scoreLiquiditySafety(data);
+  const { score: teamSafety, insiderBuyCount } = scoreTeamSafety(data, hasBundledBuys);
   const total = liquidityScore + holderScore + ageScore + volumeScore + suspicionScore;
+  const riskLevel = computeRiskLevel(total, isHoneypot, contractSafety);
 
   return {
     total: Math.min(100, Math.max(0, total)),
@@ -141,6 +209,11 @@ export function scoreToken(data: TokenData): ScoreBreakdown {
     age: ageScore,
     volume: volumeScore,
     suspicion: suspicionScore,
+    contractSafety,
+    liquiditySafety,
+    teamSafety,
+    riskLevel,
+    insiderBuyCount,
     flags,
     isHoneypot,
     hasBundledBuys,

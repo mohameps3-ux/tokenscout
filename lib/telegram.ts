@@ -1,5 +1,6 @@
 import { Telegraf } from "telegraf";
 import type { Token } from "@/app/generated/prisma/client";
+import { prisma } from "@/lib/prisma";
 
 let _bot: Telegraf | null = null;
 
@@ -108,6 +109,51 @@ export async function broadcastHighScoreAlerts(
       await sendTokenAlert(token, globalChat);
       // Small delay to avoid Telegram rate limits
       await new Promise((r) => setTimeout(r, 300));
+    }
+  }
+}
+
+/**
+ * Check all enabled custom alert rules against a set of new/updated tokens,
+ * sending Telegram notifications for matches. Called by the scanner after each batch.
+ */
+export async function checkAlertRulesAndNotify(
+  tokens: Pick<
+    Token,
+    "symbol" | "name" | "chain" | "address" | "pairAddress" |
+    "totalScore" | "priceUsd" | "liquidity" | "volume24h" | "priceChange24h"
+  >[]
+): Promise<void> {
+  if (!isTelegramConfigured() || tokens.length === 0) return;
+
+  const rules = await prisma.alertRule.findMany({ where: { enabled: true } });
+  if (rules.length === 0) return;
+
+  const bot = getBot();
+  if (!bot) return;
+
+  for (const rule of rules) {
+    const matches = tokens.filter((t) => {
+      if (t.totalScore < rule.minScore) return false;
+      if (rule.chain && t.chain !== rule.chain) return false;
+      if (rule.minLiquidity && (t.liquidity ?? 0) < rule.minLiquidity) return false;
+      if (rule.minPriceChange && Math.abs(t.priceChange24h ?? 0) < rule.minPriceChange) return false;
+      return true;
+    });
+
+    for (const token of matches.slice(0, 3)) {
+      const ruleLine = rule.label ? `\n📋 Rule: _${rule.label}_` : "";
+      const message = buildAlertMessage(token) + ruleLine;
+      try {
+        await bot.telegram.sendMessage(rule.telegramChatId, message, {
+          parse_mode: "Markdown",
+          // @ts-ignore
+          disable_web_page_preview: true,
+        });
+        await new Promise((r) => setTimeout(r, 300));
+      } catch (err) {
+        console.error(`[Telegram] Alert rule ${rule.id} failed:`, err);
+      }
     }
   }
 }

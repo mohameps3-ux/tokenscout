@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { CHAIN_CONFIG, normalizeChain } from "@/lib/chains";
+import { scoreToken } from "@/lib/scoring/scorer";
 
 export const dynamic = "force-dynamic";
 
@@ -243,15 +244,37 @@ export async function GET(
     ohlcv,
     high24h,
     low24h,
-    score: dbToken ? {
-      total: dbToken.totalScore,
-      liquidity: dbToken.liquidityScore,
-      holder: dbToken.holderScore,
-      age: dbToken.ageScore,
-      volume: dbToken.volumeScore,
-      suspicion: dbToken.suspicionScore,
-      isHoneypot: dbToken.isHoneypot,
-      hasBundledBuys: dbToken.hasBundledBuys,
-    } : null,
+    score: dbToken ? (() => {
+      // Recompute Anti-Rug 2.0 sub-scores from live pair data + stored flags
+      const liveScore = scoreToken({
+        address,
+        chain: (normalizeChain(chain) ?? "BASE"),
+        name: topPair?.baseToken?.name ?? "Unknown",
+        symbol: topPair?.baseToken?.symbol ?? "???",
+        liquidity: topPair?.liquidity?.usd,
+        volume24h: topPair?.volume?.h24,
+        marketCap: topPair?.marketCap,
+        priceUsd: topPair?.priceUsd ? parseFloat(topPair.priceUsd) : undefined,
+        priceChange24h: topPair?.priceChange?.h24,
+        buys24h: topPair?.txns?.h24?.buys,
+        sells24h: topPair?.txns?.h24?.sells,
+      });
+      return {
+        total: dbToken.totalScore,
+        liquidity: dbToken.liquidityScore,
+        holder: dbToken.holderScore,
+        age: dbToken.ageScore,
+        volume: dbToken.volumeScore,
+        suspicion: dbToken.suspicionScore,
+        contractSafety: liveScore.contractSafety,
+        liquiditySafety: liveScore.liquiditySafety,
+        teamSafety: liveScore.teamSafety,
+        riskLevel: liveScore.riskLevel,
+        insiderBuyCount: liveScore.insiderBuyCount,
+        flags: liveScore.flags,
+        isHoneypot: dbToken.isHoneypot,
+        hasBundledBuys: dbToken.hasBundledBuys,
+      };
+    })() : null,
   });
 }

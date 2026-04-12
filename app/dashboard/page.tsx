@@ -14,10 +14,11 @@ import { getScoreLabel } from "@/lib/scoring/scorer";
 import { getCurrentWeekStart } from "@/lib/elo";
 import { cookies } from "next/headers";
 import { SESSION_COOKIE } from "@/lib/session";
-import { TrendingUp, TrendingDown, AlertTriangle, BarChart3, Activity, Trophy, Target, Bot, Gift } from "lucide-react";
+import { TrendingUp, TrendingDown, AlertTriangle, BarChart3, Activity, Trophy, Target, Bot, Gift, Bell } from "lucide-react";
 import Link from "next/link";
 import { ReferralCard } from "@/components/referral/ReferralCard";
 import { ReferralLeaderboard } from "@/components/referral/ReferralLeaderboard";
+import { AlertsManager } from "@/components/alerts/AlertsManager";
 
 interface PageProps {
   searchParams: Promise<{ tab?: string }>;
@@ -87,7 +88,10 @@ async function getPredictionStats() {
 
 export default async function DashboardPage({ searchParams }: PageProps) {
   const { tab: tabParam } = await searchParams;
-  const tab = tabParam === "predictions" ? "predictions" : tabParam === "referral" ? "referral" : "scanner";
+  const tab = tabParam === "predictions" ? "predictions"
+    : tabParam === "referral" ? "referral"
+    : tabParam === "alerts" ? "alerts"
+    : "scanner";
 
   const cookieStore = await cookies();
   const sessionId = cookieStore.get(SESSION_COOKIE)?.value;
@@ -140,8 +144,10 @@ export default async function DashboardPage({ searchParams }: PageProps) {
               <ScannerTab data={scannerData} />
             ) : tab === "predictions" ? (
               <PredictionsTab sessionId={sessionId} />
-            ) : (
+            ) : tab === "referral" ? (
               <ReferralTab />
+            ) : (
+              <AlertsTab />
             )}
           </DashboardTabs>
         </Suspense>
@@ -205,6 +211,38 @@ function ReferralTab() {
           </Card>
         </div>
       </div>
+    </div>
+  );
+}
+
+// ─── Alerts Tab ──────────────────────────────────────────────────────────────
+
+function AlertsTab() {
+  return (
+    <div className="space-y-6">
+      <div className="rounded-xl border border-orange-500/20 bg-gradient-to-r from-orange-600/10 to-red-600/10 p-5 flex items-center gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-orange-600/20 border border-orange-500/30">
+          <Bell className="w-6 h-6 text-orange-400" />
+        </div>
+        <div>
+          <h2 className="text-lg font-bold text-white">Custom Telegram Alerts</h2>
+          <p className="text-sm text-zinc-400">
+            Set rules — get notified instantly when a token matches your criteria.
+          </p>
+        </div>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-sm">
+            <Bell className="w-4 h-4 text-orange-400" />
+            Your Alert Rules
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AlertsManager />
+        </CardContent>
+      </Card>
     </div>
   );
 }
