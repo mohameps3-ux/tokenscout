@@ -3,6 +3,7 @@ import { TokenDetailClient } from "@/components/token/TokenDetailClient";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { normalizeChain } from "@/lib/chains";
 
 interface PageProps {
   params: Promise<{ chain: string; address: string }>;
@@ -27,8 +28,8 @@ export default async function TokenDetailPage({ params, searchParams }: PageProp
   const { chain, address } = await params;
   const { timeframe = "1h" } = await searchParams;
 
-  const chainUpper = chain.toUpperCase();
-  if (!["BASE", "SOLANA"].includes(chainUpper)) notFound();
+  const chainUpper = normalizeChain(chain);
+  if (!chainUpper) notFound();
 
   const data = await getTokenData(chain, address, timeframe);
   if (!data) notFound();
