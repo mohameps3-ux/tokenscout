@@ -177,7 +177,11 @@ export function CoinTable({ initialCoins }: CoinTableProps) {
                     : coin.current_price.toFixed(4);
 
                 return (
-                  <tr key={coin.id} className="hover:bg-zinc-800/20 transition-colors">
+                  <tr
+                    key={coin.id}
+                    className="hover:bg-zinc-800/20 transition-colors cursor-pointer"
+                    onClick={() => window.open(`https://www.coingecko.com/en/coins/${coin.id}`, "_blank", "noopener,noreferrer")}
+                  >
                     <td className="px-3 py-3 text-sm text-zinc-500 tabular-nums w-10">
                       {coin.market_cap_rank}
                     </td>

@@ -36,7 +36,7 @@ export function TrendingSection({ trending }: TrendingSectionProps) {
           const change = coin.data?.price_change_percentage_24h?.usd;
           const up = (change ?? 0) >= 0;
           return (
-            <div key={coin.id} className="flex items-center gap-2.5 shrink-0 rounded-xl border border-zinc-800 bg-zinc-900/60 px-4 py-2.5 hover:border-zinc-700 transition-colors">
+            <a key={coin.id} href={`https://www.coingecko.com/en/coins/${coin.id}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 shrink-0 rounded-xl border border-zinc-800 bg-zinc-900/60 px-4 py-2.5 hover:border-zinc-700 transition-colors">
               <span className="text-xs text-zinc-600 font-mono w-3">#{i + 1}</span>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={coin.thumb} alt={coin.symbol} className="w-6 h-6 rounded-full" />
@@ -49,7 +49,7 @@ export function TrendingSection({ trending }: TrendingSectionProps) {
                   {up ? "+" : ""}{change.toFixed(2)}%
                 </span>
               )}
-            </div>
+            </a>
           );
         })}
       </div>

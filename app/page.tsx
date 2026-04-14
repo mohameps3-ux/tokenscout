@@ -4,6 +4,8 @@ import { MarketStatsBar } from "@/components/market/MarketStatsBar";
 import { TrendingSection } from "@/components/market/TrendingSection";
 import { DexTrendingSection } from "@/components/market/DexTrendingSection";
 import { CoinTable } from "@/components/market/CoinTable";
+import { MarketIndicators } from "@/components/market/MarketIndicators";
+import { TokenNarratives } from "@/components/market/TokenNarratives";
 
 async function getMarketData() {
   const base = process.env.NEXT_PUBLIC_APP_URL ?? `http://localhost:${process.env.PORT ?? 3000}`;
@@ -22,6 +24,7 @@ export default async function HomePage() {
   const global_ = market?.global  ?? null;
   const trending = market?.trending ?? [];
   const fearGreed = market?.fearGreed ?? null;
+  const fearGreedHistory = market?.fearGreedHistory ?? [];
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -34,6 +37,7 @@ export default async function HomePage() {
       <MarketStatsBar
         global={global_}
         fearGreed={fearGreed}
+        fearGreedHistory={fearGreedHistory}
         lastUpdated={new Date()}
       />
 
@@ -52,8 +56,14 @@ export default async function HomePage() {
         {/* CoinGecko Trending */}
         {trending.length > 0 && <TrendingSection trending={trending} />}
 
-        {/* DexScreener Hot Tokens */}
+        {/* Hot Tokens */}
         <DexTrendingSection />
+
+        {/* Market Cycle Indicators */}
+        <MarketIndicators />
+
+        {/* Token Narratives */}
+        <TokenNarratives />
 
         {/* Main table */}
         {coins.length > 0 ? (

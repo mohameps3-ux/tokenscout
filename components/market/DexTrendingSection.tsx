@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Flame, ExternalLink } from "lucide-react";
 
 interface HotToken {
@@ -60,7 +61,7 @@ export function DexTrendingSection() {
     <div className="space-y-3">
       <div className="flex items-center gap-2">
         <Flame className="w-4 h-4 text-red-400" />
-        <h2 className="text-sm font-semibold text-white">Hot on DexScreener</h2>
+        <h2 className="text-sm font-semibold text-white">Hot on TokenScout</h2>
         <span className="text-xs text-zinc-600">boosted tokens · refreshes every 5m</span>
       </div>
 
@@ -70,11 +71,9 @@ export function DexTrendingSection() {
               <div key={i} className="shrink-0 w-44 h-24 rounded-xl bg-zinc-800/50 animate-pulse" />
             ))
           : tokens.map((t, i) => (
-              <a
+              <Link
                 key={`${t.chainId}-${t.tokenAddress}-${i}`}
-                href={t.url}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={`/token/${t.chainId.toLowerCase()}/${t.tokenAddress}`}
                 className="shrink-0 flex flex-col justify-between rounded-xl border border-zinc-800 bg-zinc-900/60 hover:border-zinc-600 hover:bg-zinc-800/60 px-3.5 py-3 transition-colors w-48 group"
               >
                 <div className="flex items-start justify-between gap-2">
@@ -89,7 +88,16 @@ export function DexTrendingSection() {
                       {chainLabel(t.chainId)}
                     </span>
                   </div>
-                  <ExternalLink className="w-3 h-3 text-zinc-600 group-hover:text-zinc-400 shrink-0 mt-0.5 transition-colors" />
+                  <a
+                    href={t.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-zinc-600 group-hover:text-zinc-400 shrink-0 mt-0.5 transition-colors"
+                    title="View on DexScreener"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
                 </div>
 
                 {t.description && (
@@ -101,7 +109,7 @@ export function DexTrendingSection() {
                   <span className="font-semibold">{formatCompact(t.totalAmount)}</span>
                   <span className="text-zinc-600">boosted</span>
                 </div>
-              </a>
+              </Link>
             ))}
       </div>
     </div>

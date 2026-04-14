@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 const GCK = "https://api.coingecko.com/api/v3";
 const FNG = "https://api.alternative.me/fng/?limit=1";
+const FNG_HISTORY = "https://api.alternative.me/fng/?limit=30";
 // CoinGecko free tier: 250 coins max per request; fetch 2 pages for 500 total
 const COINS_PER_PAGE = 250;
 const MARKET_PARAMS = "vs_currency=usd&order=market_cap_desc&sparkline=false&price_change_percentage=1h,24h,7d";
@@ -20,7 +21,7 @@ async function safeFetch<T>(url: string, ttl = 30): Promise<T | null> {
 }
 
 export async function GET() {
-  const [page1, page2, global_, trending, fng] = await Promise.all([
+  const [page1, page2, global_, trending, fng, fngHistory] = await Promise.all([
     safeFetch<object[]>(
       `${GCK}/coins/markets?${MARKET_PARAMS}&per_page=${COINS_PER_PAGE}&page=1`,
       60
@@ -32,6 +33,7 @@ export async function GET() {
     safeFetch<{ data: Record<string, unknown> }>(`${GCK}/global`, 60),
     safeFetch<{ coins: object[] }>(`${GCK}/search/trending`, 300),
     safeFetch<{ data: { value: string; value_classification: string }[] }>(FNG, 3600),
+    safeFetch<{ data: { value: string; value_classification: string; timestamp: string }[] }>(FNG_HISTORY, 3600),
   ]);
 
   // Combine pages, deduplicate by id just in case
@@ -44,10 +46,18 @@ export async function GET() {
     return true;
   });
 
+  // Reverse history so oldest→newest for chart rendering
+  const fgHistory = (fngHistory?.data ?? []).slice().reverse().map((d) => ({
+    value: parseInt(d.value),
+    label: d.value_classification,
+    timestamp: parseInt(d.timestamp) * 1000,
+  }));
+
   return Response.json({
     coins,
     global: global_?.data ?? null,
     trending: (trending?.coins ?? []).slice(0, 7),
     fearGreed: fng?.data?.[0] ?? null,
+    fearGreedHistory: fgHistory,
   });
 }
