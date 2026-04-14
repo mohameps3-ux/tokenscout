@@ -29,11 +29,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Read persisted preferences
+    // Read persisted preferences; auto-detect Spanish for first-time visitors
     const savedTheme = (localStorage.getItem("ts-theme") as Theme) ?? "dark";
-    const savedLang  = (localStorage.getItem("ts-lang")  as Lang)  ?? "en";
+    const savedLangRaw = localStorage.getItem("ts-lang");
+    const defaultLang: Lang = savedLangRaw
+      ? (savedLangRaw as Lang)
+      : (typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("es") ? "es" : "en");
     setTheme(savedTheme);
-    setLangState(savedLang);
+    setLangState(defaultLang);
     applyTheme(savedTheme);
     setMounted(true);
   }, []);

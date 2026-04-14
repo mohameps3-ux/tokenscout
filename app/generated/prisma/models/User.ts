@@ -312,6 +312,7 @@ export type UserWhereInput = {
   leaderboardEntries?: Prisma.LeaderboardEntryListRelationFilter
   badges?: Prisma.UserBadgeListRelationFilter
   alertRules?: Prisma.AlertRuleListRelationFilter
+  whaleFollows?: Prisma.WhaleFollowListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -334,6 +335,7 @@ export type UserOrderByWithRelationInput = {
   leaderboardEntries?: Prisma.LeaderboardEntryOrderByRelationAggregateInput
   badges?: Prisma.UserBadgeOrderByRelationAggregateInput
   alertRules?: Prisma.AlertRuleOrderByRelationAggregateInput
+  whaleFollows?: Prisma.WhaleFollowOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -359,6 +361,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   leaderboardEntries?: Prisma.LeaderboardEntryListRelationFilter
   badges?: Prisma.UserBadgeListRelationFilter
   alertRules?: Prisma.AlertRuleListRelationFilter
+  whaleFollows?: Prisma.WhaleFollowListRelationFilter
 }, "id" | "walletAddress" | "username" | "referralCode">
 
 export type UserOrderByWithAggregationInput = {
@@ -425,6 +428,7 @@ export type UserCreateInput = {
   leaderboardEntries?: Prisma.LeaderboardEntryCreateNestedManyWithoutUserInput
   badges?: Prisma.UserBadgeCreateNestedManyWithoutUserInput
   alertRules?: Prisma.AlertRuleCreateNestedManyWithoutUserInput
+  whaleFollows?: Prisma.WhaleFollowCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -447,6 +451,7 @@ export type UserUncheckedCreateInput = {
   leaderboardEntries?: Prisma.LeaderboardEntryUncheckedCreateNestedManyWithoutUserInput
   badges?: Prisma.UserBadgeUncheckedCreateNestedManyWithoutUserInput
   alertRules?: Prisma.AlertRuleUncheckedCreateNestedManyWithoutUserInput
+  whaleFollows?: Prisma.WhaleFollowUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -469,6 +474,7 @@ export type UserUpdateInput = {
   leaderboardEntries?: Prisma.LeaderboardEntryUpdateManyWithoutUserNestedInput
   badges?: Prisma.UserBadgeUpdateManyWithoutUserNestedInput
   alertRules?: Prisma.AlertRuleUpdateManyWithoutUserNestedInput
+  whaleFollows?: Prisma.WhaleFollowUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -491,6 +497,7 @@ export type UserUncheckedUpdateInput = {
   leaderboardEntries?: Prisma.LeaderboardEntryUncheckedUpdateManyWithoutUserNestedInput
   badges?: Prisma.UserBadgeUncheckedUpdateManyWithoutUserNestedInput
   alertRules?: Prisma.AlertRuleUncheckedUpdateManyWithoutUserNestedInput
+  whaleFollows?: Prisma.WhaleFollowUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -700,6 +707,20 @@ export type UserUpdateOneRequiredWithoutBadgesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutBadgesInput, Prisma.UserUpdateWithoutBadgesInput>, Prisma.UserUncheckedUpdateWithoutBadgesInput>
 }
 
+export type UserCreateNestedOneWithoutWhaleFollowsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWhaleFollowsInput, Prisma.UserUncheckedCreateWithoutWhaleFollowsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWhaleFollowsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutWhaleFollowsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWhaleFollowsInput, Prisma.UserUncheckedCreateWithoutWhaleFollowsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWhaleFollowsInput
+  upsert?: Prisma.UserUpsertWithoutWhaleFollowsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutWhaleFollowsInput, Prisma.UserUpdateWithoutWhaleFollowsInput>, Prisma.UserUncheckedUpdateWithoutWhaleFollowsInput>
+}
+
 export type UserCreateWithoutAlertRulesInput = {
   id?: string
   walletAddress?: string | null
@@ -719,6 +740,7 @@ export type UserCreateWithoutAlertRulesInput = {
   predictions?: Prisma.PredictionCreateNestedManyWithoutUserInput
   leaderboardEntries?: Prisma.LeaderboardEntryCreateNestedManyWithoutUserInput
   badges?: Prisma.UserBadgeCreateNestedManyWithoutUserInput
+  whaleFollows?: Prisma.WhaleFollowCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAlertRulesInput = {
@@ -740,6 +762,7 @@ export type UserUncheckedCreateWithoutAlertRulesInput = {
   predictions?: Prisma.PredictionUncheckedCreateNestedManyWithoutUserInput
   leaderboardEntries?: Prisma.LeaderboardEntryUncheckedCreateNestedManyWithoutUserInput
   badges?: Prisma.UserBadgeUncheckedCreateNestedManyWithoutUserInput
+  whaleFollows?: Prisma.WhaleFollowUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAlertRulesInput = {
@@ -777,6 +800,7 @@ export type UserUpdateWithoutAlertRulesInput = {
   predictions?: Prisma.PredictionUpdateManyWithoutUserNestedInput
   leaderboardEntries?: Prisma.LeaderboardEntryUpdateManyWithoutUserNestedInput
   badges?: Prisma.UserBadgeUpdateManyWithoutUserNestedInput
+  whaleFollows?: Prisma.WhaleFollowUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAlertRulesInput = {
@@ -798,6 +822,7 @@ export type UserUncheckedUpdateWithoutAlertRulesInput = {
   predictions?: Prisma.PredictionUncheckedUpdateManyWithoutUserNestedInput
   leaderboardEntries?: Prisma.LeaderboardEntryUncheckedUpdateManyWithoutUserNestedInput
   badges?: Prisma.UserBadgeUncheckedUpdateManyWithoutUserNestedInput
+  whaleFollows?: Prisma.WhaleFollowUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPredictionsInput = {
@@ -819,6 +844,7 @@ export type UserCreateWithoutPredictionsInput = {
   leaderboardEntries?: Prisma.LeaderboardEntryCreateNestedManyWithoutUserInput
   badges?: Prisma.UserBadgeCreateNestedManyWithoutUserInput
   alertRules?: Prisma.AlertRuleCreateNestedManyWithoutUserInput
+  whaleFollows?: Prisma.WhaleFollowCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPredictionsInput = {
@@ -840,6 +866,7 @@ export type UserUncheckedCreateWithoutPredictionsInput = {
   leaderboardEntries?: Prisma.LeaderboardEntryUncheckedCreateNestedManyWithoutUserInput
   badges?: Prisma.UserBadgeUncheckedCreateNestedManyWithoutUserInput
   alertRules?: Prisma.AlertRuleUncheckedCreateNestedManyWithoutUserInput
+  whaleFollows?: Prisma.WhaleFollowUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPredictionsInput = {
@@ -877,6 +904,7 @@ export type UserUpdateWithoutPredictionsInput = {
   leaderboardEntries?: Prisma.LeaderboardEntryUpdateManyWithoutUserNestedInput
   badges?: Prisma.UserBadgeUpdateManyWithoutUserNestedInput
   alertRules?: Prisma.AlertRuleUpdateManyWithoutUserNestedInput
+  whaleFollows?: Prisma.WhaleFollowUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPredictionsInput = {
@@ -898,6 +926,7 @@ export type UserUncheckedUpdateWithoutPredictionsInput = {
   leaderboardEntries?: Prisma.LeaderboardEntryUncheckedUpdateManyWithoutUserNestedInput
   badges?: Prisma.UserBadgeUncheckedUpdateManyWithoutUserNestedInput
   alertRules?: Prisma.AlertRuleUncheckedUpdateManyWithoutUserNestedInput
+  whaleFollows?: Prisma.WhaleFollowUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutLeaderboardEntriesInput = {
@@ -919,6 +948,7 @@ export type UserCreateWithoutLeaderboardEntriesInput = {
   predictions?: Prisma.PredictionCreateNestedManyWithoutUserInput
   badges?: Prisma.UserBadgeCreateNestedManyWithoutUserInput
   alertRules?: Prisma.AlertRuleCreateNestedManyWithoutUserInput
+  whaleFollows?: Prisma.WhaleFollowCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutLeaderboardEntriesInput = {
@@ -940,6 +970,7 @@ export type UserUncheckedCreateWithoutLeaderboardEntriesInput = {
   predictions?: Prisma.PredictionUncheckedCreateNestedManyWithoutUserInput
   badges?: Prisma.UserBadgeUncheckedCreateNestedManyWithoutUserInput
   alertRules?: Prisma.AlertRuleUncheckedCreateNestedManyWithoutUserInput
+  whaleFollows?: Prisma.WhaleFollowUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutLeaderboardEntriesInput = {
@@ -977,6 +1008,7 @@ export type UserUpdateWithoutLeaderboardEntriesInput = {
   predictions?: Prisma.PredictionUpdateManyWithoutUserNestedInput
   badges?: Prisma.UserBadgeUpdateManyWithoutUserNestedInput
   alertRules?: Prisma.AlertRuleUpdateManyWithoutUserNestedInput
+  whaleFollows?: Prisma.WhaleFollowUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutLeaderboardEntriesInput = {
@@ -998,6 +1030,7 @@ export type UserUncheckedUpdateWithoutLeaderboardEntriesInput = {
   predictions?: Prisma.PredictionUncheckedUpdateManyWithoutUserNestedInput
   badges?: Prisma.UserBadgeUncheckedUpdateManyWithoutUserNestedInput
   alertRules?: Prisma.AlertRuleUncheckedUpdateManyWithoutUserNestedInput
+  whaleFollows?: Prisma.WhaleFollowUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutBadgesInput = {
@@ -1019,6 +1052,7 @@ export type UserCreateWithoutBadgesInput = {
   predictions?: Prisma.PredictionCreateNestedManyWithoutUserInput
   leaderboardEntries?: Prisma.LeaderboardEntryCreateNestedManyWithoutUserInput
   alertRules?: Prisma.AlertRuleCreateNestedManyWithoutUserInput
+  whaleFollows?: Prisma.WhaleFollowCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBadgesInput = {
@@ -1040,6 +1074,7 @@ export type UserUncheckedCreateWithoutBadgesInput = {
   predictions?: Prisma.PredictionUncheckedCreateNestedManyWithoutUserInput
   leaderboardEntries?: Prisma.LeaderboardEntryUncheckedCreateNestedManyWithoutUserInput
   alertRules?: Prisma.AlertRuleUncheckedCreateNestedManyWithoutUserInput
+  whaleFollows?: Prisma.WhaleFollowUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBadgesInput = {
@@ -1077,6 +1112,7 @@ export type UserUpdateWithoutBadgesInput = {
   predictions?: Prisma.PredictionUpdateManyWithoutUserNestedInput
   leaderboardEntries?: Prisma.LeaderboardEntryUpdateManyWithoutUserNestedInput
   alertRules?: Prisma.AlertRuleUpdateManyWithoutUserNestedInput
+  whaleFollows?: Prisma.WhaleFollowUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBadgesInput = {
@@ -1098,6 +1134,111 @@ export type UserUncheckedUpdateWithoutBadgesInput = {
   predictions?: Prisma.PredictionUncheckedUpdateManyWithoutUserNestedInput
   leaderboardEntries?: Prisma.LeaderboardEntryUncheckedUpdateManyWithoutUserNestedInput
   alertRules?: Prisma.AlertRuleUncheckedUpdateManyWithoutUserNestedInput
+  whaleFollows?: Prisma.WhaleFollowUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutWhaleFollowsInput = {
+  id?: string
+  walletAddress?: string | null
+  username?: string | null
+  eloScore?: number
+  totalPredictions?: number
+  correctPredictions?: number
+  tier?: string
+  stripeCustomerId?: string | null
+  referralCode?: string | null
+  points?: number
+  referredBy?: string | null
+  proExpiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  telegramChatId?: string | null
+  predictions?: Prisma.PredictionCreateNestedManyWithoutUserInput
+  leaderboardEntries?: Prisma.LeaderboardEntryCreateNestedManyWithoutUserInput
+  badges?: Prisma.UserBadgeCreateNestedManyWithoutUserInput
+  alertRules?: Prisma.AlertRuleCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutWhaleFollowsInput = {
+  id?: string
+  walletAddress?: string | null
+  username?: string | null
+  eloScore?: number
+  totalPredictions?: number
+  correctPredictions?: number
+  tier?: string
+  stripeCustomerId?: string | null
+  referralCode?: string | null
+  points?: number
+  referredBy?: string | null
+  proExpiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  telegramChatId?: string | null
+  predictions?: Prisma.PredictionUncheckedCreateNestedManyWithoutUserInput
+  leaderboardEntries?: Prisma.LeaderboardEntryUncheckedCreateNestedManyWithoutUserInput
+  badges?: Prisma.UserBadgeUncheckedCreateNestedManyWithoutUserInput
+  alertRules?: Prisma.AlertRuleUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutWhaleFollowsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutWhaleFollowsInput, Prisma.UserUncheckedCreateWithoutWhaleFollowsInput>
+}
+
+export type UserUpsertWithoutWhaleFollowsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutWhaleFollowsInput, Prisma.UserUncheckedUpdateWithoutWhaleFollowsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutWhaleFollowsInput, Prisma.UserUncheckedCreateWithoutWhaleFollowsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutWhaleFollowsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutWhaleFollowsInput, Prisma.UserUncheckedUpdateWithoutWhaleFollowsInput>
+}
+
+export type UserUpdateWithoutWhaleFollowsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  walletAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eloScore?: Prisma.IntFieldUpdateOperationsInput | number
+  totalPredictions?: Prisma.IntFieldUpdateOperationsInput | number
+  correctPredictions?: Prisma.IntFieldUpdateOperationsInput | number
+  tier?: Prisma.StringFieldUpdateOperationsInput | string
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  referredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  telegramChatId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  predictions?: Prisma.PredictionUpdateManyWithoutUserNestedInput
+  leaderboardEntries?: Prisma.LeaderboardEntryUpdateManyWithoutUserNestedInput
+  badges?: Prisma.UserBadgeUpdateManyWithoutUserNestedInput
+  alertRules?: Prisma.AlertRuleUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutWhaleFollowsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  walletAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  eloScore?: Prisma.IntFieldUpdateOperationsInput | number
+  totalPredictions?: Prisma.IntFieldUpdateOperationsInput | number
+  correctPredictions?: Prisma.IntFieldUpdateOperationsInput | number
+  tier?: Prisma.StringFieldUpdateOperationsInput | string
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referralCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  referredBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  telegramChatId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  predictions?: Prisma.PredictionUncheckedUpdateManyWithoutUserNestedInput
+  leaderboardEntries?: Prisma.LeaderboardEntryUncheckedUpdateManyWithoutUserNestedInput
+  badges?: Prisma.UserBadgeUncheckedUpdateManyWithoutUserNestedInput
+  alertRules?: Prisma.AlertRuleUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -1110,6 +1251,7 @@ export type UserCountOutputType = {
   leaderboardEntries: number
   badges: number
   alertRules: number
+  whaleFollows: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1117,6 +1259,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   leaderboardEntries?: boolean | UserCountOutputTypeCountLeaderboardEntriesArgs
   badges?: boolean | UserCountOutputTypeCountBadgesArgs
   alertRules?: boolean | UserCountOutputTypeCountAlertRulesArgs
+  whaleFollows?: boolean | UserCountOutputTypeCountWhaleFollowsArgs
 }
 
 /**
@@ -1157,6 +1300,13 @@ export type UserCountOutputTypeCountAlertRulesArgs<ExtArgs extends runtime.Types
   where?: Prisma.AlertRuleWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountWhaleFollowsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WhaleFollowWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1178,6 +1328,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   leaderboardEntries?: boolean | Prisma.User$leaderboardEntriesArgs<ExtArgs>
   badges?: boolean | Prisma.User$badgesArgs<ExtArgs>
   alertRules?: boolean | Prisma.User$alertRulesArgs<ExtArgs>
+  whaleFollows?: boolean | Prisma.User$whaleFollowsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1241,6 +1392,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   leaderboardEntries?: boolean | Prisma.User$leaderboardEntriesArgs<ExtArgs>
   badges?: boolean | Prisma.User$badgesArgs<ExtArgs>
   alertRules?: boolean | Prisma.User$alertRulesArgs<ExtArgs>
+  whaleFollows?: boolean | Prisma.User$whaleFollowsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1253,6 +1405,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     leaderboardEntries: Prisma.$LeaderboardEntryPayload<ExtArgs>[]
     badges: Prisma.$UserBadgePayload<ExtArgs>[]
     alertRules: Prisma.$AlertRulePayload<ExtArgs>[]
+    whaleFollows: Prisma.$WhaleFollowPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1668,6 +1821,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   leaderboardEntries<T extends Prisma.User$leaderboardEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$leaderboardEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeaderboardEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   badges<T extends Prisma.User$badgesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$badgesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserBadgePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   alertRules<T extends Prisma.User$alertRulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$alertRulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AlertRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  whaleFollows<T extends Prisma.User$whaleFollowsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$whaleFollowsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WhaleFollowPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2196,6 +2350,30 @@ export type User$alertRulesArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.AlertRuleScalarFieldEnum | Prisma.AlertRuleScalarFieldEnum[]
+}
+
+/**
+ * User.whaleFollows
+ */
+export type User$whaleFollowsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WhaleFollow
+   */
+  select?: Prisma.WhaleFollowSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the WhaleFollow
+   */
+  omit?: Prisma.WhaleFollowOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WhaleFollowInclude<ExtArgs> | null
+  where?: Prisma.WhaleFollowWhereInput
+  orderBy?: Prisma.WhaleFollowOrderByWithRelationInput | Prisma.WhaleFollowOrderByWithRelationInput[]
+  cursor?: Prisma.WhaleFollowWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WhaleFollowScalarFieldEnum | Prisma.WhaleFollowScalarFieldEnum[]
 }
 
 /**

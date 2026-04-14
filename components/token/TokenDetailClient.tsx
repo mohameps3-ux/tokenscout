@@ -8,6 +8,7 @@ import { AntiRug2Card } from "@/components/token/AntiRug2Card";
 import { TradeWidget } from "@/components/token/TradeWidget";
 import { WhaleActivity } from "@/components/token/WhaleActivity";
 import { DeployerInfoCard } from "@/components/token/DeployerInfoCard";
+import { TokenHoldersSection } from "@/components/token/TokenHoldersSection";
 import { ScoreBar, ScoreBreakdown } from "@/components/dashboard/ScoreBar";
 import { Badge } from "@/components/ui/badge";
 import { formatUsd, formatPercent, formatAge, formatNumber } from "@/lib/utils";
@@ -16,7 +17,7 @@ import { computeAiScore } from "@/lib/scoring/aiScore";
 import { CHAIN_CONFIG, normalizeChain } from "@/lib/chains";
 import {
   TrendingUp, TrendingDown, Globe, Send, ExternalLink,
-  AlertTriangle, Shield, Zap, ShieldX, Brain,
+  AlertTriangle, Shield, Zap, ShieldX, Brain, Bell, MessageCircle,
 } from "lucide-react";
 
 interface Pool {
@@ -64,6 +65,7 @@ interface TokenData {
   website: string | null;
   twitter: string | null;
   telegram: string | null;
+  discord: string | null;
   description: string | null;
   pairCreatedAt: number | null;
   listedAt: string | null;
@@ -71,6 +73,16 @@ interface TokenData {
   high24h: number | null;
   low24h: number | null;
   score: Score | null;
+  similarTokens: {
+    address: string;
+    name: string;
+    symbol: string;
+    priceUsd: number | null;
+    marketCap: number | null;
+    totalScore: number;
+    priceChange24h: number | null;
+    chain: string;
+  }[];
 }
 
 interface TokenDetailClientProps {
@@ -106,8 +118,9 @@ export function TokenDetailClient({ data, currentTimeframe }: TokenDetailClientP
   const {
     address, chain, name, symbol, priceUsd, priceChange,
     marketCap, fdv, totalSupply, volume24h, txns24h, liquidity,
-    pairAddress, pools, website, twitter, telegram, description,
+    pairAddress, pools, website, twitter, telegram, discord, description,
     pairCreatedAt, listedAt, ohlcv, high24h, low24h, score, imageUrl,
+    similarTokens,
   } = data;
 
   const change24h = priceChange?.h24 ?? null;
@@ -180,7 +193,7 @@ export function TokenDetailClient({ data, currentTimeframe }: TokenDetailClientP
           </div>
         </div>
 
-        {/* Quick trade buttons */}
+        {/* Quick trade buttons + alert */}
         <div className="flex flex-wrap gap-2 shrink-0">
           {tradeLinks.map(({ label, url, color }) => (
             <a key={label} href={url} target="_blank" rel="noopener noreferrer"
@@ -188,6 +201,10 @@ export function TokenDetailClient({ data, currentTimeframe }: TokenDetailClientP
               <Zap className="w-3.5 h-3.5" />{label}
             </a>
           ))}
+          <a href="/alerts"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-zinc-700 bg-zinc-800/50 text-sm font-medium text-zinc-300 hover:text-white hover:bg-zinc-700 transition-colors">
+            <Bell className="w-3.5 h-3.5" />Alert
+          </a>
         </div>
       </div>
 
@@ -467,7 +484,7 @@ export function TokenDetailClient({ data, currentTimeframe }: TokenDetailClientP
           )}
 
           {/* Token Info */}
-          {(website || twitter || telegram || description) && (
+          {(website || twitter || telegram || discord || description) && (
             <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-5 space-y-4">
               <p className="text-sm font-semibold text-white">Token Info</p>
               {description && (
@@ -483,7 +500,7 @@ export function TokenDetailClient({ data, currentTimeframe }: TokenDetailClientP
                 {twitter && (
                   <a href={twitter} target="_blank" rel="noopener noreferrer"
                     className="flex items-center gap-1.5 text-sm text-sky-400 hover:text-sky-300 bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-lg transition-colors">
-                    <ExternalLink className="w-3.5 h-3.5" />Twitter
+                    <ExternalLink className="w-3.5 h-3.5" />Twitter / X
                   </a>
                 )}
                 {telegram && (
@@ -492,6 +509,52 @@ export function TokenDetailClient({ data, currentTimeframe }: TokenDetailClientP
                     <Send className="w-3.5 h-3.5" />Telegram
                   </a>
                 )}
+                {discord && (
+                  <a href={discord} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-sm text-indigo-400 hover:text-indigo-300 bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-lg transition-colors">
+                    <MessageCircle className="w-3.5 h-3.5" />Discord
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Top Holders */}
+          <TokenHoldersSection chain={chain} address={address} />
+
+          {/* Similar Tokens */}
+          {similarTokens && similarTokens.length > 0 && (
+            <div className="space-y-3">
+              <p className="text-sm font-semibold text-white">Similar Tokens</p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {similarTokens.slice(0, 4).map((t) => (
+                  <a
+                    key={t.address}
+                    href={`/token/${t.chain.toLowerCase()}/${t.address}`}
+                    className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-3 hover:border-zinc-600 hover:bg-zinc-800/50 transition-colors group"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-bold text-white group-hover:text-blue-300 transition-colors truncate">
+                        {t.symbol}
+                      </span>
+                      <span className={`text-xs font-medium ${
+                        t.totalScore >= 70 ? "text-emerald-400" :
+                        t.totalScore >= 50 ? "text-yellow-400" : "text-zinc-500"
+                      }`}>
+                        {t.totalScore}
+                      </span>
+                    </div>
+                    <p className="text-xs text-zinc-500 truncate mb-1">{t.name}</p>
+                    {t.priceUsd != null && (
+                      <p className="text-xs text-zinc-300 font-mono">{formatUsd(t.priceUsd)}</p>
+                    )}
+                    {t.priceChange24h != null && (
+                      <p className={`text-xs font-medium mt-0.5 ${t.priceChange24h >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+                        {t.priceChange24h >= 0 ? "+" : ""}{t.priceChange24h.toFixed(2)}%
+                      </p>
+                    )}
+                  </a>
+                ))}
               </div>
             </div>
           )}

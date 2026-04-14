@@ -391,7 +391,9 @@ export const ModelName = {
   Prediction: 'Prediction',
   LeaderboardEntry: 'LeaderboardEntry',
   UserBadge: 'UserBadge',
-  JobLog: 'JobLog'
+  JobLog: 'JobLog',
+  WhaleWallet: 'WhaleWallet',
+  WhaleFollow: 'WhaleFollow'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -407,7 +409,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "alertRule" | "token" | "score" | "prediction" | "leaderboardEntry" | "userBadge" | "jobLog"
+    modelProps: "user" | "alertRule" | "token" | "score" | "prediction" | "leaderboardEntry" | "userBadge" | "jobLog" | "whaleWallet" | "whaleFollow"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1003,6 +1005,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    WhaleWallet: {
+      payload: Prisma.$WhaleWalletPayload<ExtArgs>
+      fields: Prisma.WhaleWalletFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.WhaleWalletFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleWalletPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.WhaleWalletFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleWalletPayload>
+        }
+        findFirst: {
+          args: Prisma.WhaleWalletFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleWalletPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.WhaleWalletFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleWalletPayload>
+        }
+        findMany: {
+          args: Prisma.WhaleWalletFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleWalletPayload>[]
+        }
+        create: {
+          args: Prisma.WhaleWalletCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleWalletPayload>
+        }
+        createMany: {
+          args: Prisma.WhaleWalletCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.WhaleWalletCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleWalletPayload>[]
+        }
+        delete: {
+          args: Prisma.WhaleWalletDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleWalletPayload>
+        }
+        update: {
+          args: Prisma.WhaleWalletUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleWalletPayload>
+        }
+        deleteMany: {
+          args: Prisma.WhaleWalletDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.WhaleWalletUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.WhaleWalletUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleWalletPayload>[]
+        }
+        upsert: {
+          args: Prisma.WhaleWalletUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleWalletPayload>
+        }
+        aggregate: {
+          args: Prisma.WhaleWalletAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateWhaleWallet>
+        }
+        groupBy: {
+          args: Prisma.WhaleWalletGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WhaleWalletGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.WhaleWalletCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WhaleWalletCountAggregateOutputType> | number
+        }
+      }
+    }
+    WhaleFollow: {
+      payload: Prisma.$WhaleFollowPayload<ExtArgs>
+      fields: Prisma.WhaleFollowFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.WhaleFollowFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleFollowPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.WhaleFollowFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleFollowPayload>
+        }
+        findFirst: {
+          args: Prisma.WhaleFollowFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleFollowPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.WhaleFollowFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleFollowPayload>
+        }
+        findMany: {
+          args: Prisma.WhaleFollowFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleFollowPayload>[]
+        }
+        create: {
+          args: Prisma.WhaleFollowCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleFollowPayload>
+        }
+        createMany: {
+          args: Prisma.WhaleFollowCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.WhaleFollowCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleFollowPayload>[]
+        }
+        delete: {
+          args: Prisma.WhaleFollowDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleFollowPayload>
+        }
+        update: {
+          args: Prisma.WhaleFollowUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleFollowPayload>
+        }
+        deleteMany: {
+          args: Prisma.WhaleFollowDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.WhaleFollowUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.WhaleFollowUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleFollowPayload>[]
+        }
+        upsert: {
+          args: Prisma.WhaleFollowUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WhaleFollowPayload>
+        }
+        aggregate: {
+          args: Prisma.WhaleFollowAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateWhaleFollow>
+        }
+        groupBy: {
+          args: Prisma.WhaleFollowGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WhaleFollowGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.WhaleFollowCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WhaleFollowCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1182,6 +1332,34 @@ export const JobLogScalarFieldEnum = {
 export type JobLogScalarFieldEnum = (typeof JobLogScalarFieldEnum)[keyof typeof JobLogScalarFieldEnum]
 
 
+export const WhaleWalletScalarFieldEnum = {
+  id: 'id',
+  address: 'address',
+  chain: 'chain',
+  totalTrades: 'totalTrades',
+  buyCount: 'buyCount',
+  sellCount: 'sellCount',
+  totalVolume: 'totalVolume',
+  winCount: 'winCount',
+  bestTradeUsd: 'bestTradeUsd',
+  lastSeen: 'lastSeen',
+  createdAt: 'createdAt'
+} as const
+
+export type WhaleWalletScalarFieldEnum = (typeof WhaleWalletScalarFieldEnum)[keyof typeof WhaleWalletScalarFieldEnum]
+
+
+export const WhaleFollowScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  walletAddress: 'walletAddress',
+  chain: 'chain',
+  createdAt: 'createdAt'
+} as const
+
+export type WhaleFollowScalarFieldEnum = (typeof WhaleFollowScalarFieldEnum)[keyof typeof WhaleFollowScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1341,6 +1519,8 @@ export type GlobalOmitConfig = {
   leaderboardEntry?: Prisma.LeaderboardEntryOmit
   userBadge?: Prisma.UserBadgeOmit
   jobLog?: Prisma.JobLogOmit
+  whaleWallet?: Prisma.WhaleWalletOmit
+  whaleFollow?: Prisma.WhaleFollowOmit
 }
 
 /* Types for Logging */

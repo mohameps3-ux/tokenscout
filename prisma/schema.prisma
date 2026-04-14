@@ -36,6 +36,7 @@ model User {
   leaderboardEntries LeaderboardEntry[]
   badges             UserBadge[]
   alertRules         AlertRule[]
+  whaleFollows       WhaleFollow[]
 
   @@index([eloScore])
   @@index([walletAddress])
@@ -180,5 +181,38 @@ model JobLog {
 
   @@index([jobName])
   @@index([createdAt])
+}
+
+model WhaleWallet {
+  id           String   @id @default(cuid())
+  address      String
+  chain        String
+  totalTrades  Int      @default(0)
+  buyCount     Int      @default(0)
+  sellCount    Int      @default(0)
+  totalVolume  Float    @default(0)
+  winCount     Int      @default(0)
+  bestTradeUsd Float    @default(0)
+  lastSeen     DateTime @default(now())
+  createdAt    DateTime @default(now())
+
+  @@unique([address, chain])
+  @@index([totalVolume])
+  @@index([chain])
+  @@index([lastSeen])
+}
+
+model WhaleFollow {
+  id            String   @id @default(cuid())
+  userId        String
+  walletAddress String
+  chain         String
+  createdAt     DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, walletAddress, chain])
+  @@index([userId])
+  @@index([walletAddress, chain])
 }
 

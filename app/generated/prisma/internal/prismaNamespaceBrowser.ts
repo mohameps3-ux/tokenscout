@@ -58,7 +58,9 @@ export const ModelName = {
   Prediction: 'Prediction',
   LeaderboardEntry: 'LeaderboardEntry',
   UserBadge: 'UserBadge',
-  JobLog: 'JobLog'
+  JobLog: 'JobLog',
+  WhaleWallet: 'WhaleWallet',
+  WhaleFollow: 'WhaleFollow'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -215,6 +217,34 @@ export const JobLogScalarFieldEnum = {
 } as const
 
 export type JobLogScalarFieldEnum = (typeof JobLogScalarFieldEnum)[keyof typeof JobLogScalarFieldEnum]
+
+
+export const WhaleWalletScalarFieldEnum = {
+  id: 'id',
+  address: 'address',
+  chain: 'chain',
+  totalTrades: 'totalTrades',
+  buyCount: 'buyCount',
+  sellCount: 'sellCount',
+  totalVolume: 'totalVolume',
+  winCount: 'winCount',
+  bestTradeUsd: 'bestTradeUsd',
+  lastSeen: 'lastSeen',
+  createdAt: 'createdAt'
+} as const
+
+export type WhaleWalletScalarFieldEnum = (typeof WhaleWalletScalarFieldEnum)[keyof typeof WhaleWalletScalarFieldEnum]
+
+
+export const WhaleFollowScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  walletAddress: 'walletAddress',
+  chain: 'chain',
+  createdAt: 'createdAt'
+} as const
+
+export type WhaleFollowScalarFieldEnum = (typeof WhaleFollowScalarFieldEnum)[keyof typeof WhaleFollowScalarFieldEnum]
 
 
 export const SortOrder = {

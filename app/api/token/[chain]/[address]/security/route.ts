@@ -118,6 +118,12 @@ export async function GET(
           percent: parseFloat(h.percent ?? "0") * 100,
           lockUntil: h.locked_detail?.[0]?.end_time ?? null,
         })),
+        holders: (raw.holders ?? []).slice(0, 10).map((h) => ({
+          address: h.address,
+          tag: h.tag ?? null,
+          isContract: h.is_contract === 1,
+          percent: parseFloat(h.percent ?? "0") * 100,
+        })),
         explorerUrl: cfg ? cfg.explorerUrl(raw.creator_address ?? "") : null,
       },
     });

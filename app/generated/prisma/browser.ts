@@ -57,3 +57,13 @@ export type UserBadge = Prisma.UserBadgeModel
  * 
  */
 export type JobLog = Prisma.JobLogModel
+/**
+ * Model WhaleWallet
+ * 
+ */
+export type WhaleWallet = Prisma.WhaleWalletModel
+/**
+ * Model WhaleFollow
+ * 
+ */
+export type WhaleFollow = Prisma.WhaleFollowModel
